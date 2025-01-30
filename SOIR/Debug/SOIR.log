@@ -1,0 +1,5 @@
+﻿  main.cpp
+c:\users\timal\onedrive\dokumente\studium\semester_2.1\3dsmc\project\soir\soir\main.cpp(8): fatal error C1083: Cannot open include file: 'Eigen.h': No such file or directory
+  VirtualSensorOpenNI.h
+c:\users\timal\onedrive\dokumente\studium\semester_2.1\3dsmc\project\soir\soir\virtualsensoropenni.h(8): fatal error C1083: Cannot open include file: 'Eigen.h': No such file or directory
+  Generating Code...

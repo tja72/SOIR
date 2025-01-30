@@ -1,0 +1,38 @@
+﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  Statistics.cpp
+  NiViewer.cpp
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\glh\glh_extensions.h(189,15): warning C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strdup. See online help for details.
+  (compiling source file 'NiViewer.cpp')
+  
+  MouseInput.cpp
+  Menu.cpp
+  Keyboard.cpp
+  Draw.cpp
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Draw.cpp(363,11): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Device.cpp
+  Capture.cpp
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(517,18): warning C4477: 'sprintf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'time_t'
+      C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(517,18):
+      consider using '%lld' in the format string
+      C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(517,18):
+      consider using '%Id' in the format string
+      C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(517,18):
+      consider using '%I64d' in the format string
+  
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(526,18): warning C4477: 'sprintf' : format string '%d' requires an argument of type 'int', but variadic argument 3 has type 'time_t'
+      C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(526,18):
+      consider using '%lld' in the format string
+      C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(526,18):
+      consider using '%Id' in the format string
+      C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(526,18):
+      consider using '%I64d' in the format string
+  
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(698,5): warning C4551: function call missing argument list
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(736,52): warning C4244: 'argument': conversion from 'XnUInt64' to 'int', possible loss of data
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Capture.cpp(737,52): warning C4244: 'argument': conversion from 'XnUInt64' to 'int', possible loss of data
+  Audio.cpp
+C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\NiViewer_modified\Audio.cpp(159,19): warning C4244: 'initializing': conversion from 'DWORD_PTR' to 'XnUInt32', possible loss of data
+  Generating Code...
+  NiViewer_2010.vcxproj -> C:\Users\timal\OneDrive\Dokumente\Studium\Semester_2.1\3DSMC\project\SOIR\Capturing_Data\Bin64\Debug\NiViewer.exe
+  Der Befehl "pwsh.exe" ist entweder falsch geschrieben oder
+  konnte nicht gefunden werden.

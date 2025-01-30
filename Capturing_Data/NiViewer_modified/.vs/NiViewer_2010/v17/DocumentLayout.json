@@ -1,0 +1,154 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Capture.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|solutionrelative:Capture.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Capture.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|solutionrelative:Capture.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\NiViewer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|solutionrelative:NiViewer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Draw.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|solutionrelative:Draw.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Draw.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|solutionrelative:Draw.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Device.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|solutionrelative:Device.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Device.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{98122DD2-BFE1-4CA8-0147-E4168A7368C8}|NiViewer_2010.vcxproj|solutionrelative:Device.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files (x86)\\OpenNI\\Include\\Win32\\XnOSWin32.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Draw.h",
+              "DocumentMoniker": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Draw.h",
+              "RelativeDocumentMoniker": "Draw.h",
+              "ToolTip": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Draw.h",
+              "RelativeToolTip": "Draw.h",
+              "ViewState": "AgIAAF4AAAAAAAAAAADwv2wAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-01-26T16:40:05.219Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Draw.cpp",
+              "DocumentMoniker": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Draw.cpp",
+              "RelativeDocumentMoniker": "Draw.cpp",
+              "ToolTip": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Draw.cpp",
+              "RelativeToolTip": "Draw.cpp",
+              "ViewState": "AgIAABoGAAAAAAAAAIAwwC0GAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-01-26T16:39:44.561Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Device.h",
+              "DocumentMoniker": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Device.h",
+              "RelativeDocumentMoniker": "Device.h",
+              "ToolTip": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Device.h",
+              "RelativeToolTip": "Device.h",
+              "ViewState": "AgIAAFEAAAAAAAAAAADwv3EAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-01-26T16:39:43.244Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Capture.h",
+              "DocumentMoniker": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Capture.h",
+              "RelativeDocumentMoniker": "Capture.h",
+              "ToolTip": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Capture.h",
+              "RelativeToolTip": "Capture.h",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAADYAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-01-26T16:39:41.833Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Device.cpp",
+              "DocumentMoniker": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Device.cpp",
+              "RelativeDocumentMoniker": "Device.cpp",
+              "ToolTip": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Device.cpp",
+              "RelativeToolTip": "Device.cpp",
+              "ViewState": "AgIAAKQCAAAAAAAAAADwv74CAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-01-26T15:13:02.884Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "XnOSWin32.h",
+              "DocumentMoniker": "C:\\Program Files (x86)\\OpenNI\\Include\\Win32\\XnOSWin32.h",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\OpenNI\\Include\\Win32\\XnOSWin32.h",
+              "ToolTip": "C:\\Program Files (x86)\\OpenNI\\Include\\Win32\\XnOSWin32.h",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\OpenNI\\Include\\Win32\\XnOSWin32.h",
+              "ViewState": "AgIAAFUAAAAAAAAAAAAewGMAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-01-25T23:36:36.005Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Capture.cpp",
+              "DocumentMoniker": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Capture.cpp",
+              "RelativeDocumentMoniker": "Capture.cpp",
+              "ToolTip": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\Capture.cpp",
+              "RelativeToolTip": "Capture.cpp",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAAACkAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-01-25T18:46:01.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "NiViewer.cpp",
+              "DocumentMoniker": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\NiViewer.cpp",
+              "RelativeDocumentMoniker": "NiViewer.cpp",
+              "ToolTip": "C:\\Users\\timal\\OneDrive\\Dokumente\\Studium\\Semester_2.1\\3DSMC\\project\\SOIR\\Capturing_Data\\NiViewer_modified\\NiViewer.cpp",
+              "RelativeToolTip": "NiViewer.cpp",
+              "ViewState": "AgIAAKoCAAAAAAAAAIAwwLECAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-01-24T14:52:27.113Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
