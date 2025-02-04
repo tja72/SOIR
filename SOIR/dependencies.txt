@@ -1,0 +1,26 @@
+dependencies.txt
+
+ICB uses:
+
+Eigen.h
+NearestNeighbor.h
+PointCloud.h
+SimpleMesh.h
+VirtualSensor.h
+ICPOptimizer.h
+
+libs:
+ceres
+Eigen
+Flann
+FreeImage (not sure if necessary)
+
+RBF uses:
+Eigen.h
+ImplicitSurface.h
+MarchingCubes.h
+Volume.h
+Volume.cpp (könnte man umschreiben, habe in der übung nicht ganz verstanden warum das extra als .cpp ist, vlt raff ich die sprache nicht)
+
+libs:
+Eigen

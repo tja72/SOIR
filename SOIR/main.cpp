@@ -11,6 +11,7 @@
 #include "ICPOptimizer.h"
 #include "ProcrustesAligner.h"
 #include "PointCloud.h"
+#include "icp.h"
 
 
 // --------------------------------
@@ -122,6 +123,13 @@ int main() {
 		
 
 		i++;
+
+		// ICP 
+		// SimpleMesh temp = constructObject(sensor_output_from_previous_step)
+		//
+		// RBF
+		// result = MarchingCube_RBF(temp)
+		// safe result to drive
 	}
 
 	return 0;
@@ -132,7 +140,9 @@ int main() {
 
 	// extract Background
 
-	// ICP
+	// ICP code
+	//find me in icp.h :)
+
 
 	// RBF
 
