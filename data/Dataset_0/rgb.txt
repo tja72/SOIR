@@ -1,0 +1,7 @@
+# color imges
+# file: '../../data/Dataset_0'
+# timestamp filename
+1738668986.7768184 Depth/Image_720366080.raw
+1738668987.9276404 Depth/Image_720366080.raw
+1738668997.18828464 Depth/Image_720366080.raw
+1738668999.20705360 Depth/Image_720366080.raw

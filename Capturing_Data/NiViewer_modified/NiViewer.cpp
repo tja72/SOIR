@@ -213,6 +213,8 @@ void init_opengl()
 
 void closeSample(int errCode)
 {
+	saveTxtOverview();
+	setCapturingTxt(0);
 	captureStop(0);
 	closeDevice();
 

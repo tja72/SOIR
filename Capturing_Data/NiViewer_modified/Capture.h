@@ -61,5 +61,6 @@ void setCapturingTxt(int capturing);
 void recordFramesTxt(int);
 void closeRecordingTxt(int);
 void setHasNewFrame(int);
+void saveTxtOverview();
 
 #endif //__CAPTURE_H__

@@ -1,0 +1,7 @@
+# depth maps
+# file: '../../data/Dataset_0'
+# timestamp filename
+1738668986.7775035 Depth/Depth_720366768.raw
+1738668987.9310020 Depth/Depth_720366768.raw
+1738668997.18820257 Depth/Depth_720366768.raw
+1738668999.20722304 Depth/Depth_720366768.raw

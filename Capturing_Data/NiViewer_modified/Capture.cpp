@@ -35,6 +35,8 @@ using namespace xn;
 #include <fstream>
 #include <chrono>
 #include <iostream>
+#include <vector>
+#include <tuple>
 
 // --------------------------------
 // Defines
@@ -111,6 +113,11 @@ bool isCapturingTxt = false;
 bool closeRecording = false;
 int hasNewFrame = 0;
 int captureFrameRate = 1;
+bool closeCapturingTxt = false;
+
+std::vector<std::tuple<std::string, std::string>> listOfDepthNamesTxt;
+std::vector<std::tuple<std::string, std::string>> listOfImageNamesTxt;
+
 
 // --------------------------------
 // Code
@@ -691,8 +698,133 @@ void recordFramesTxt(int) {
 			captureSingleFrame(0);
 			hasNewFrame = 0;
 		}
+		if (closeCapturingTxt) {
+
+			XnChar fileNameDepth[XN_FILE_MAX_PATH];
+			sprintf(fileNameDepth, "%s/depth.txt", CAPTURED_FRAMES_DIR_NAME);
+			std::ofstream depthFileTxt(fileNameDepth);
+			if (!depthFileTxt.is_open()) {
+				std::cerr << "error saving the depth txt file";
+				return;
+			}
+			depthFileTxt << "# depth maps\n";
+			depthFileTxt << "# file: '" << CAPTURED_FRAMES_DIR_NAME << "'\n";
+			depthFileTxt << "# timestamp filename\n";
+			for (std::tuple<std::string, std::string>& tuple : listOfDepthNamesTxt) {
+				std::string timestamp, fileName;
+				std::tie(timestamp, fileName) = tuple;
+				depthFileTxt << timestamp << " Depth/" << fileName << "\n";
+			}
+			depthFileTxt.close();
+
+
+			// writing file with all image filenames and timestamps
+			XnChar fileNameImage[XN_FILE_MAX_PATH];
+			sprintf(fileNameImage, "%s/rgb.txt", CAPTURED_FRAMES_DIR_NAME);
+			std::ofstream imageFileTxt(fileNameImage);
+			if (!imageFileTxt.is_open()) {
+				std::cerr << "error saving the image txt file";
+				return;
+			}
+
+			imageFileTxt << "# color imges\n";
+			imageFileTxt << "# file: '" << CAPTURED_FRAMES_DIR_NAME << "'\n";
+			imageFileTxt << "# timestamp filename\n";
+			for (std::tuple<std::string, std::string>& tuple : listOfImageNamesTxt) {
+				std::string timestamp, fileName;
+				std::tie(timestamp, fileName) = tuple;
+				imageFileTxt << timestamp << " Depth/" << fileName << "\n";
+			}
+			imageFileTxt.close();
+
+			closeCapturingTxt = false;
+		}
+	}
+	if (closeCapturingTxt) {
+
+		XnChar fileNameDepth[XN_FILE_MAX_PATH];
+		sprintf(fileNameDepth, "%s/depth.txt", CAPTURED_FRAMES_DIR_NAME);
+		std::ofstream depthFileTxt(fileNameDepth);
+		if (!depthFileTxt.is_open()) {
+			std::cerr << "error saving the depth txt file";
+			return;
+		}
+		depthFileTxt << "# depth maps\n";
+		depthFileTxt << "# file: '" << CAPTURED_FRAMES_DIR_NAME << "'\n";
+		depthFileTxt << "# timestamp filename\n";
+		for (std::tuple<std::string, std::string>& tuple : listOfDepthNamesTxt) {
+			std::string timestamp, fileName;
+			std::tie(timestamp, fileName) = tuple;
+			depthFileTxt << timestamp << " Depth/" << fileName << "\n";
+		}
+		depthFileTxt.close();
+
+
+		// writing file with all image filenames and timestamps
+		XnChar fileNameImage[XN_FILE_MAX_PATH];
+		sprintf(fileNameImage, "%s/rgb.txt", CAPTURED_FRAMES_DIR_NAME);
+		std::ofstream imageFileTxt(fileNameImage);
+		if (!imageFileTxt.is_open()) {
+			std::cerr << "error saving the image txt file";
+			return;
+		}
+
+		imageFileTxt << "# color imges\n";
+		imageFileTxt << "# file: '" << CAPTURED_FRAMES_DIR_NAME << "'\n";
+		imageFileTxt << "# timestamp filename\n";
+		for (std::tuple<std::string, std::string>& tuple : listOfImageNamesTxt) {
+			std::string timestamp, fileName;
+			std::tie(timestamp, fileName) = tuple;
+			imageFileTxt << timestamp << " Depth/" << fileName << "\n";
+		}
+		imageFileTxt.close();
+
+		closeCapturingTxt = false;
 	}
 
+}
+
+void saveTxtOverview() {
+	// writing file with all image filenames and timestamps
+
+	XnChar fileNameDepth[XN_FILE_MAX_PATH];
+	sprintf(fileNameDepth, "%s/depth.txt", CAPTURED_FRAMES_DIR_NAME);
+	std::ofstream depthFileTxt(fileNameDepth);
+	if (!depthFileTxt.is_open()) {
+		std::cerr << "error saving the depth txt file";
+		return;
+	}
+	depthFileTxt << "# depth maps\n";
+	depthFileTxt << "# file: '" << CAPTURED_FRAMES_DIR_NAME << "'\n";
+	depthFileTxt << "# timestamp filename\n";
+	for (std::tuple<std::string, std::string>& tuple : listOfDepthNamesTxt) {
+		std::string timestamp, fileName;
+		std::tie(timestamp, fileName) = tuple;
+		depthFileTxt << timestamp << " Depth/" << fileName << "\n";
+	}
+	depthFileTxt.close();
+
+
+	// writing file with all image filenames and timestamps
+	XnChar fileNameImage[XN_FILE_MAX_PATH];
+	sprintf(fileNameImage, "%s/rgb.txt", CAPTURED_FRAMES_DIR_NAME);
+	std::ofstream imageFileTxt(fileNameImage);
+	if (!imageFileTxt.is_open()) {
+		std::cerr << "error saving the image txt file";
+		return;
+	}
+
+	imageFileTxt << "# color imges\n";
+	imageFileTxt << "# file: '" << CAPTURED_FRAMES_DIR_NAME << "'\n";
+	imageFileTxt << "# timestamp filename\n";
+	for (std::tuple<std::string, std::string>& tuple : listOfImageNamesTxt) {
+		std::string timestamp, fileName;
+		std::tie(timestamp, fileName) = tuple;
+		imageFileTxt << timestamp << " Depth/" << fileName << "\n";
+	}
+	imageFileTxt.close();
+
+	closeCapturingTxt = false;
 }
 
 void setHasNewFrame(int) {
@@ -708,8 +840,11 @@ void closeRecordingTxt(int) {
 void setCapturingTxt(int capturing) {
 	if (capturing == 1)
 		isCapturingTxt = true;
-	else if (capturing == 0)
+	else if (capturing == 0) {
+		if (isCapturingTxt)
+			closeCapturingTxt = true;
 		isCapturingTxt = false;
+	}
 	else
 		printf("Wrong use of setCapturingTxt");
 }
@@ -739,6 +874,17 @@ void captureSingleFrame(int)
 	getImageFileNameTxt(curr_time, pImageMD->Timestamp(), csImageFileNameTxt);
 	getDepthFileNameTxt(curr_time, pDepthMD->Timestamp(), csDepthFileNameTxt);
 
+	// safe filenames and timestamp for overview txt files
+	XnChar tempTimestampName[XN_FILE_MAX_PATH];
+	XnChar tempFileName[XN_FILE_MAX_PATH];
+	sprintf(tempTimestampName, "%d.%d", curr_time, pImageMD->Timestamp());
+	sprintf(tempFileName, "Image_%d.raw", tempTimestampName);
+	listOfImageNamesTxt.push_back(std::make_tuple(tempTimestampName, tempFileName));
+
+	XnChar tempTimestampName2[XN_FILE_MAX_PATH];
+	sprintf(tempTimestampName2, "%d.%d", curr_time, pDepthMD->Timestamp());
+	sprintf(tempFileName, "Depth_%d.raw", tempTimestampName2);
+	listOfDepthNamesTxt.push_back(std::make_tuple(tempTimestampName2, tempFileName));
 
 	// create Directories
 	xnOSCreateDirectory(CAPTURED_FRAMES_DIR_NAME);
