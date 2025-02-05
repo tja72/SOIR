@@ -7,6 +7,7 @@
 
 #include "Eigen.h"
 #include "VirtualSensorOpenNI.h"
+#include "VirtualSensor.h"
 #include "SimpleMesh.h"
 #include "ICPOptimizer.h"
 #include "ProcrustesAligner.h"
@@ -16,8 +17,8 @@
 // --------------------------------
 // Defines
 // --------------------------------
-#define CAPTURED_FRAMES_DIR_NAME "../data/"
-#define OUTPUT_FILE_NAME "../result/"
+#define CAPTURED_FRAMES_DIR_NAME "../data/Dataset_1/"
+#define OUTPUT_FILE_NAME "../results/"
 #define USE_POINT_TO_PLANE	1
 
 
@@ -37,11 +38,12 @@
 //		after that: add task specific steps (turn around object etc...)
 
 
-void removeBackgorund(PointCloud *pointCloud) {
-	//TODOOOOO ---------------------------------------------------------------------------------------------------------------------------
+
+
+
+void removeBackground(PointCloud* pointCloud) {
+	return;
 }
-
-
 
 int main() {
 
@@ -68,7 +70,7 @@ int main() {
 		optimizer.usePointToPlaneConstraints(false);
 		optimizer.setNbOfIterations(20);
 	}
-
+	
 	// We store the estimated camera poses.
 	std::vector<Matrix4f> estimatedPoses;
 	Matrix4f currentCameraToWorld = Matrix4f::Identity();
@@ -76,13 +78,13 @@ int main() {
 	PointCloud target;
 
 	int i = 0;
-	while (sensor.ProcessNextFrame()) {
+	while (sensor.processNextFrame()) {
 		// get ptr to the current depth frame
 		// depth is stored in row major (get dimensions via sensor.GetDepthImageWidth() / GetDepthImageHeight())
-		float* depthMap = sensor.GetDepth();
+		float* depthMap = sensor.getDepth();
 		// get ptr to the current color frame
 		// color is stored as RGBX in row major (4 byte values per pixel, get dimensions via sensor.GetColorImageWidth() / GetColorImageHeight())
-		BYTE* colorMap = sensor.GetColorRGBX();
+		BYTE* colorMap = sensor.getColorRGBX();
 
 		Matrix3f depthIntrinsics = sensor.getDepthIntrinsics();
 		Matrix4f depthExtrinsics = sensor.getDepthExtrinsics();
@@ -95,6 +97,7 @@ int main() {
 			// We store a first frame as a reference frame. All next frames are tracked relatively to the first frame.
 			target = PointCloud{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight() };
 			removeBackground(&target); // TODO
+			
 		}
 		else {
 			PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
@@ -115,7 +118,7 @@ int main() {
 
 		std::stringstream ss;
 		ss << OUTPUT_FILE_NAME << sensor.getCurrentFrameCnt() << ".off";
-		if (!resultingMesh.writeMesh(ss.str())) {
+		if (!currentDepthMesh.writeMesh(ss.str())) {
 			std::cout << "Failed to write mesh!\nCheck file path!" << std::endl;
 			return -1;
 		}
@@ -141,3 +144,5 @@ int main() {
 	
 
 }
+
+

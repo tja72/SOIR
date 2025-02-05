@@ -92,7 +92,7 @@ typedef struct RawHeader {
 	FileType filetype;
 	int width;
 	int height;
-	XnUInt64 timestamp;
+	std::string timestamp;
 
 } RawHeader;
 
@@ -733,7 +733,7 @@ void recordFramesTxt(int) {
 			for (std::tuple<std::string, std::string>& tuple : listOfImageNamesTxt) {
 				std::string timestamp, fileName;
 				std::tie(timestamp, fileName) = tuple;
-				imageFileTxt << timestamp << " Depth/" << fileName << "\n";
+				imageFileTxt << timestamp << " Image/" << fileName << "\n";
 			}
 			imageFileTxt.close();
 
@@ -775,7 +775,7 @@ void recordFramesTxt(int) {
 		for (std::tuple<std::string, std::string>& tuple : listOfImageNamesTxt) {
 			std::string timestamp, fileName;
 			std::tie(timestamp, fileName) = tuple;
-			imageFileTxt << timestamp << " Depth/" << fileName << "\n";
+			imageFileTxt << timestamp << " Image/" << fileName << "\n";
 		}
 		imageFileTxt.close();
 
@@ -820,7 +820,7 @@ void saveTxtOverview() {
 	for (std::tuple<std::string, std::string>& tuple : listOfImageNamesTxt) {
 		std::string timestamp, fileName;
 		std::tie(timestamp, fileName) = tuple;
-		imageFileTxt << timestamp << " Depth/" << fileName << "\n";
+		imageFileTxt << timestamp << " Image/" << fileName << "\n";
 	}
 	imageFileTxt.close();
 
@@ -878,12 +878,12 @@ void captureSingleFrame(int)
 	XnChar tempTimestampName[XN_FILE_MAX_PATH];
 	XnChar tempFileName[XN_FILE_MAX_PATH];
 	sprintf(tempTimestampName, "%d.%d", curr_time, pImageMD->Timestamp());
-	sprintf(tempFileName, "Image_%d.raw", tempTimestampName);
+	sprintf(tempFileName, "Image_%d.%d.raw", curr_time, pImageMD->Timestamp());
 	listOfImageNamesTxt.push_back(std::make_tuple(tempTimestampName, tempFileName));
 
 	XnChar tempTimestampName2[XN_FILE_MAX_PATH];
 	sprintf(tempTimestampName2, "%d.%d", curr_time, pDepthMD->Timestamp());
-	sprintf(tempFileName, "Depth_%d.raw", tempTimestampName2);
+	sprintf(tempFileName, "Depth_%d.%d.raw", curr_time, pDepthMD->Timestamp());
 	listOfDepthNamesTxt.push_back(std::make_tuple(tempTimestampName2, tempFileName));
 
 	// create Directories

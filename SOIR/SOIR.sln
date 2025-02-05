@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.35431.46
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOIR", "SOIR.vcxproj", "{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}"
 EndProject
@@ -15,8 +15,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Debug|x64.ActiveCfg = Debug|x64
 		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Debug|x64.Build.0 = Debug|x64
-		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Debug|x86.ActiveCfg = Debug|Win32
-		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Debug|x86.Build.0 = Debug|Win32
+		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Debug|x86.ActiveCfg = Debug|x64
+		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Debug|x86.Build.0 = Debug|x64
 		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Release|x64.ActiveCfg = Release|x64
 		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Release|x64.Build.0 = Release|x64
 		{E1F122DF-9A38-4F4A-8F91-EB9FF1A57C58}.Release|x86.ActiveCfg = Release|Win32

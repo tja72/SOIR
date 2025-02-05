@@ -10,27 +10,13 @@
 
 typedef unsigned char BYTE;
 
-enum FileType
-{
-	DEPTH,
-	IMAGE
-};
-
-struct RawHeader {
-	FileType filetype;
-	int width;
-	int height;
-	uint64_t timestamp;
-
-};
-
-// adapted from VirtualSensor.h from https://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats
-class VirtualSensorOpenNI {
+// reads sensor files according to https://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats
+class VirtualSensor {
 public:
 
-	VirtualSensorOpenNI() : m_currentIdx(-1), m_increment(1) {}
+	VirtualSensor() : m_currentIdx(-1), m_increment(1) { }
 
-	~VirtualSensorOpenNI() {
+	~VirtualSensor() {
 		SAFE_DELETE_ARRAY(m_depthFrame);
 		SAFE_DELETE_ARRAY(m_colorFrame);
 	}
@@ -43,22 +29,22 @@ public:
 		if (!readFileList(datasetDir + "rgb.txt", m_filenameColorImages, m_colorImagesTimeStamps)) return false;
 
 		// Read tracking
-		//if (!readTrajectoryFile(datasetDir + "groundtruth.txt", m_trajectory, m_trajectoryTimeStamps)) return false;
+		if (!readTrajectoryFile(datasetDir + "groundtruth.txt", m_trajectory, m_trajectoryTimeStamps)) return false;
 
 		if (m_filenameDepthImages.size() != m_filenameColorImages.size()) return false;
 
-		// Image resolutions TODO -----------------------------------------------------------------------------------------------------------------
-		m_colorImageWidth = 320;
-		m_colorImageHeight = 240;
-		m_depthImageWidth = 320;
-		m_depthImageHeight = 240;
+		// Image resolutions
+		m_colorImageWidth = 640;
+		m_colorImageHeight = 480;
+		m_depthImageWidth = 640;
+		m_depthImageHeight = 480;
 
-		// Intrinsics TODO
+		// Intrinsics
 		m_colorIntrinsics << 525.0f, 0.0f, 319.5f,
 			0.0f, 525.0f, 239.5f,
 			0.0f, 0.0f, 1.0f;
 
-		m_depthIntrinsics = m_colorIntrinsics; //TODO
+		m_depthIntrinsics = m_colorIntrinsics;
 
 		m_colorExtrinsics.setIdentity();
 		m_depthExtrinsics.setIdentity();
@@ -74,94 +60,6 @@ public:
 		return true;
 	}
 
-	bool LoadImageFromRAWFile(std::string filename) {
-		// Open the .raw file in binary mode
-		std::ifstream inputFile(filename, std::ios::binary);
-
-		if (!inputFile.is_open()) {
-			std::cerr << "Failed to open file: " << filename << "\n" << std::endl;
-			return false;
-		}
-
-		// read the header from File
-		RawHeader header;
-		inputFile.read(reinterpret_cast<char*>(&header), sizeof(header));
-
-		if (inputFile.fail()) {
-			std::cerr << "Failed to read header from file.\n" << std::endl;
-			return false;
-		}
-
-		// check width, height, timestamp and format
-		// why different timestamp here???? m_colorImagesTimeStamps[m_currentIdx] != header.timestamp ||
-		if (m_colorImageHeight != header.height || m_colorImageWidth != header.width ||  IMAGE != header.filetype) {
-			std::cerr << "Header error while trying to read file " << filename << "\n" << std::endl;
-			return false;
-		}
-
-		// read data
-		inputFile.read(reinterpret_cast<char*>(m_colorFrame), m_colorImageHeight * m_colorImageWidth * sizeof(BYTE) * 3);
-
-		if (inputFile.fail()) {
-			std::cerr << "Failed to read image data from file." << std::endl;
-			return false;
-		}
-
-		// clean up
-		inputFile.close();
-		return true;
-	}
-
-	bool LoadDepthFromRAWFile(std::string filename) {
-		// Open the .raw file in binary mode
-		std::ifstream inputFile(filename, std::ios::binary);
-
-		if (!inputFile.is_open()) {
-			std::cerr << "Failed to open file: " << filename << "\n" << std::endl;
-			return false;
-		}
-
-		// read the header from File
-		RawHeader header;
-		inputFile.read(reinterpret_cast<char*>(&header), sizeof(header));
-
-		if (inputFile.fail()) {
-			std::cerr << "Failed to read header from file.\n" << std::endl;
-			return false;
-		}
-
-		// check width, height, timestamp and format
-		// why different timestamp here??? m_depthImagesTimeStamps[m_currentIdx] != header.timestamp ||
-		if (m_depthImageHeight != header.height || m_depthImageWidth != header.width ||  DEPTH != header.filetype) {
-			std::cerr << "Header error while trying to read file " << filename << "\n" << std::endl;
-			return false;
-		}
-
-		// read data
-		uint16_t* depthData = new uint16_t[m_depthImageWidth * m_depthImageHeight];
-		inputFile.read(reinterpret_cast<char*>(depthData), m_depthImageWidth * m_depthImageHeight * sizeof(uint16_t));
-
-		if (inputFile.fail()) {
-			std::cerr << "Failed to read depth data from file." << std::endl;
-			delete[] depthData;
-			return false;
-		}
-		
-		//format depth data to same format as https://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats
-		for (unsigned int i = 0; i < m_depthImageWidth * m_depthImageHeight; ++i) {
-			if (depthData[i] == 0)
-				m_depthFrame[i] = MINF;
-			else
-				m_depthFrame[i] = depthData[i] * 1.0f; // TODO correct? / 5000.0f; -----------------------------------------
-		}
-
-		// clean up
-		delete[] depthData;
-		inputFile.close();
-		return true;
-	}
-
-
 	bool processNextFrame() {
 		if (m_currentIdx == -1) m_currentIdx = 0;
 		else m_currentIdx += m_increment;
@@ -170,28 +68,21 @@ public:
 
 		std::cout << "ProcessNextFrame [" << m_currentIdx << " | " << m_filenameColorImages.size() << "]" << std::endl;
 
-		//FreeImageB rgbImage;
-		//rgbImage.LoadImageFromFile(m_baseDir + m_filenameColorImages[m_currentIdx]);
-		//memcpy(m_colorFrame, rgbImage.data, 4 * m_colorImageWidth * m_colorImageHeight);
-
-		if (!LoadImageFromRAWFile(m_baseDir + m_filenameColorImages[m_currentIdx]))
-			return false;
-		if (!LoadDepthFromRAWFile(m_baseDir + m_filenameDepthImages[m_currentIdx]))
-			return false;
+		FreeImageB rgbImage;
+		rgbImage.LoadImageFromFile(m_baseDir + m_filenameColorImages[m_currentIdx]);
+		memcpy(m_colorFrame, rgbImage.data, 4 * 640 * 480);
 
 		// depth images are scaled by 5000 (see https://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats)
-		/**FreeImageU16F dImage;
+		FreeImageU16F dImage;
 		dImage.LoadImageFromFile(m_baseDir + m_filenameDepthImages[m_currentIdx]);
 
 		for (unsigned int i = 0; i < m_depthImageWidth * m_depthImageHeight; ++i) {
 			if (dImage.data[i] == 0)
 				m_depthFrame[i] = MINF;
 			else
-				m_depthFrame[i] = dImage.data[i] * 1.0f; // TODO correct? / 5000.0f; -----------------------------------------
-		}**/
+				m_depthFrame[i] = dImage.data[i] * 1.0f / 5000.0f;
+		}
 
-
-		/** only if you have a trajectory file
 		// find transformation (simple nearest neighbor, linear search)
 		double timestamp = m_depthImagesTimeStamps[m_currentIdx];
 		double min = std::numeric_limits<double>::max();
@@ -203,7 +94,7 @@ public:
 				idx = i;
 			}
 		}
-		m_currentTrajectory = m_trajectory[idx];**/
+		m_currentTrajectory = m_trajectory[idx];
 
 		return true;
 	}
@@ -255,11 +146,11 @@ public:
 	unsigned int getDepthImageHeight() {
 		return m_depthImageHeight;
 	}
-	/**
+
 	// get current trajectory transformation
 	Eigen::Matrix4f getTrajectory() {
 		return m_currentTrajectory;
-	}**/
+	}
 
 private:
 	bool readFileList(const std::string& filename, std::vector<std::string>& result, std::vector<double>& timestamps) {
@@ -283,9 +174,9 @@ private:
 		fileDepthList.close();
 		return true;
 	}
-	/**
+
 	bool readTrajectoryFile(const std::string& filename, std::vector<Eigen::Matrix4f>& result,
-		std::vector<double>& timestamps) {
+	                        std::vector<double>& timestamps) {
 		std::ifstream file(filename, std::ios::in);
 		if (!file.is_open()) return false;
 		result.clear();
@@ -316,12 +207,12 @@ private:
 		}
 		file.close();
 		return true;
-	}**/
+	}
 
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-		// current frame index
-		int m_currentIdx;
+	// current frame index
+	int m_currentIdx;
 
 	int m_increment;
 

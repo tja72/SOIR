@@ -1,2 +1,6 @@
-SOIR/.vs/*
-Capturing_Data/NiViewer_modified/.vs/*
+SOIR/.vs/
+Capturing_Data/NiViewer_modified/.vs/
+SOIR/libs/
+SOIR/Debug/
+SOIR/x64/
+SOIR/SOIR/

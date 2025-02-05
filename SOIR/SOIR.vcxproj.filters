@@ -30,8 +30,37 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files\main_pipeline</Filter>
     </ClCompile>
-    <ClCompile Include="VirtualSensorOpenNI.h">
+    <ClCompile Include="FreeImageHelper.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PointCloud.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcrustesAligner.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleMesh.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualSensor.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Eigen.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeImageHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ICPOptimizer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="NearestNeighbor.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualSensorOpenNI.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
