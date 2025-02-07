@@ -60,6 +60,7 @@ int main() {
 	}
 
 	// Setup the optimizer; TODO -----------------------------------------------------------------------------------------------------------------
+	
 	ICPOptimizer optimizer;
 	optimizer.setMatchingMaxDistance(0.0003f);
 	if (USE_POINT_TO_PLANE) {

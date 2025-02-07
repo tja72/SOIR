@@ -62,5 +62,23 @@
     <ClInclude Include="VirtualSensorOpenNI.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="rbf.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ImplicitSurface.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Volume.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MarchingCubes.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleMesh2.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="icp.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

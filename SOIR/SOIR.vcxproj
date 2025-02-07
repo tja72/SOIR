@@ -139,7 +139,13 @@
   <ItemGroup>
     <ClCompile Include="FreeImageHelper.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClInclude Include="icp.h" />
+    <ClInclude Include="ImplicitSurface.h" />
+    <ClInclude Include="MarchingCubes.h" />
+    <ClInclude Include="rbf.h" />
+    <ClInclude Include="SimpleMesh2.h" />
     <ClInclude Include="VirtualSensorOpenNI.h" />
+    <ClInclude Include="Volume.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Eigen.h" />
