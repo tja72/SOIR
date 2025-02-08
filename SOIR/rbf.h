@@ -10,7 +10,11 @@
 
 using namespace simple_mesh2;
 
-int applyRBF_MarchingCubes(simple_mesh2::PointCloud m_pointcloud) {
+int applyRBF_MarchingCubes(std::string path) {
+
+	//open up point_cloud 
+	simple_mesh2::PointCloud m_pointcloud;
+	 m_pointcloud.ReadFromFile(path);
 
 	ImplicitSurface* surface;
 	surface = new RBF(m_pointcloud);
@@ -48,11 +52,13 @@ int applyRBF_MarchingCubes(simple_mesh2::PointCloud m_pointcloud) {
 
 	// write mesh to file
 	//last step, so we should write out the mesh here :)
-	//if (!mesh.WriteMesh(filenameOut))
-	//{
-	//	std::cout << "ERROR: unable to write output file!" << std::endl;
-	//	return -1;
-	//}
+
+	std::string filenameOut = "endresult.off";
+	if (!mesh.WriteMesh(filenameOut))
+	{
+		std::cout << "ERROR: unable to write output file!" << std::endl;
+		return -1;
+	}
 
 	delete surface;
 

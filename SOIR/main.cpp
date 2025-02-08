@@ -15,6 +15,9 @@
 #include "icp.h"
 #include "rbf.h"
 
+
+
+
 using namespace simple_mesh1;
 using namespace point_cloud;
 
@@ -122,6 +125,8 @@ int main() {
 		simple_mesh1::SimpleMesh currentCameraMesh = simple_mesh1::SimpleMesh::camera(currentCameraPose, 0.0015f);
 		simple_mesh1::SimpleMesh resultingMesh = simple_mesh1::SimpleMesh::joinMeshes(currentDepthMesh, currentCameraMesh, Matrix4f::Identity());
 
+		resultingMesh.writeMesh("resultingmesh.off");
+
 		std::stringstream ss;
 		ss << OUTPUT_FILE_NAME << sensor.getCurrentFrameCnt() << ".off";
 		if (!currentDepthMesh.writeMesh(ss.str())) {
@@ -133,22 +138,15 @@ int main() {
 		i++;
 	}
 
-	return 0;
+	
 
 	/////////////////////////////////////
-		
+	//RBF
+	std::string path = "resultingmesh.off";
+	applyRBF_MarchingCubes(path);
 	
+	return 0;
 
-	// extract Background
-	//VirtualSensor OutputFromVio;
-	
-	// ICP
-	//constructObject(sensor);
-
-	// RBF
-	//std::string filenameIn = "./data/normalized.pcb";
-	//applyRBF_MarchingCubes(filenameIn);
-	// save result
 
 	
 
