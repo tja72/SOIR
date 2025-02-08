@@ -34,12 +34,14 @@ int constructObject(VirtualSensorOpenNI sensor) {
 	std::vector<Matrix4f> estimatedPoses;
 	Matrix4f currentCameraToWorld = Matrix4f::Identity();
 	estimatedPoses.push_back(currentCameraToWorld.inverse());
+	//PointCloud target;
 
 	int i = 0;
 	//const int iMax = 50;
 	const int iMax = 10;
 	while (sensor.processNextFrame() && i <= iMax) {
 		float* depthMap = sensor.getDepth();
+		BYTE* colorMap = sensor.getColorRGBX();
 		Matrix3f depthIntrinsics = sensor.getDepthIntrinsics();
 		Matrix4f depthExtrinsics = sensor.getDepthExtrinsics();
 
@@ -47,6 +49,7 @@ int constructObject(VirtualSensorOpenNI sensor) {
 		// We downsample the source image to speed up the correspondence matching.
 		PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
 		currentCameraToWorld = optimizer.estimatePose(source, target, currentCameraToWorld);
+
 
 		// Invert the transformation matrix to get the current camera pose.
 		Matrix4f currentCameraPose = currentCameraToWorld.inverse();

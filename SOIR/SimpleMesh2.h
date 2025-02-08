@@ -8,193 +8,197 @@
 
 #include "Eigen.h"
 
-typedef Eigen::Vector3f Vertex;
+namespace simple_mesh2 {
 
-struct Triangle
-{
-	unsigned int idx0;
-	unsigned int idx1;
-	unsigned int idx2;
-	Triangle(unsigned int _idx0, unsigned int _idx1, unsigned int _idx2) :
-		idx0(_idx0), idx1(_idx1), idx2(_idx2)
+	typedef Eigen::Vector3f Vertex;
+
+	struct Triangle
 	{
-	}
-};
-
-class SimpleMesh2
-{
-public:
-
-	void Clear()
-	{
-		m_vertices.clear();
-		m_triangles.clear();
-	}
-
-	unsigned int AddVertex(Vertex& vertex)
-	{
-		unsigned int vId = (unsigned int)m_vertices.size();
-		m_vertices.push_back(vertex);
-		return vId;
-	}
-
-	unsigned int AddFace(unsigned int idx0, unsigned int idx1, unsigned int idx2)
-	{
-		unsigned int fId = (unsigned int)m_triangles.size();
-		Triangle triangle(idx0, idx1, idx2);
-		m_triangles.push_back(triangle);
-		return fId;
-	}
-
-	std::vector<Vertex>& GetVertices()
-	{
-		return m_vertices;
-	}
-
-	std::vector<Triangle>& GetTriangles()
-	{
-		return m_triangles;
-	}
-
-	bool WriteMesh(const std::string& filename)
-	{
-		// Write off file
-		std::ofstream outFile(filename);
-		if (!outFile.is_open()) return false;
-
-		// write header
-		outFile << "OFF" << std::endl;
-		outFile << m_vertices.size() << " " << m_triangles.size() << " 0" << std::endl;
-
-		// save vertices
-		for (unsigned int i = 0; i < m_vertices.size(); i++)
+		unsigned int idx0;
+		unsigned int idx1;
+		unsigned int idx2;
+		Triangle(unsigned int _idx0, unsigned int _idx1, unsigned int _idx2) :
+			idx0(_idx0), idx1(_idx1), idx2(_idx2)
 		{
-			outFile << m_vertices[i].x() << " " << m_vertices[i].y() << " " << m_vertices[i].z() << std::endl;
+		}
+	};
+
+	class SimpleMesh
+	{
+	public:
+
+		void Clear()
+		{
+			m_vertices.clear();
+			m_triangles.clear();
 		}
 
-		// save faces
-		for (unsigned int i = 0; i < m_triangles.size(); i++)
+		unsigned int AddVertex(Vertex& vertex)
 		{
-			outFile << "3 " << m_triangles[i].idx0 << " " << m_triangles[i].idx1 << " " << m_triangles[i].idx2 << std::endl;
+			unsigned int vId = (unsigned int)m_vertices.size();
+			m_vertices.push_back(vertex);
+			return vId;
 		}
 
-		// close file
-		outFile.close();
-
-		return true;
-	}
-
-private:
-	std::vector<Vertex> m_vertices;
-	std::vector<Triangle> m_triangles;
-};
-
-class PointCloud2
-{
-public:
-	bool ReadFromFile(const std::string& filename)
-	{
-		std::ifstream is(filename, std::ios::in | std::ios::binary);
-		if (!is.is_open())
+		unsigned int AddFace(unsigned int idx0, unsigned int idx1, unsigned int idx2)
 		{
-			std::cout << "ERROR: unable to read input file!" << std::endl;
-			return false;
+			unsigned int fId = (unsigned int)m_triangles.size();
+			Triangle triangle(idx0, idx1, idx2);
+			m_triangles.push_back(triangle);
+			return fId;
 		}
 
-		char nBytes;
-		is.read(&nBytes, sizeof(char));
-
-		unsigned int n;
-		is.read((char*)&n, sizeof(unsigned int));
-
-		if (nBytes == sizeof(float))
+		std::vector<Vertex>& GetVertices()
 		{
-			float* ps = new float[3 * n];
+			return m_vertices;
+		}
 
-			is.read((char*)ps, 3 * sizeof(float) * n);
+		std::vector<Triangle>& GetTriangles()
+		{
+			return m_triangles;
+		}
 
-			for (unsigned int i = 0; i < n; i++)
+		bool WriteMesh(const std::string& filename)
+		{
+			// Write off file
+			std::ofstream outFile(filename);
+			if (!outFile.is_open()) return false;
+
+			// write header
+			outFile << "OFF" << std::endl;
+			outFile << m_vertices.size() << " " << m_triangles.size() << " 0" << std::endl;
+
+			// save vertices
+			for (unsigned int i = 0; i < m_vertices.size(); i++)
 			{
-				Eigen::Vector3f p(ps[3 * i + 0], ps[3 * i + 1], ps[3 * i + 2]);
-				m_points.push_back(p);
+				outFile << m_vertices[i].x() << " " << m_vertices[i].y() << " " << m_vertices[i].z() << std::endl;
 			}
 
-			is.read((char*)ps, 3 * sizeof(float) * n);
-			for (unsigned int i = 0; i < n; i++)
+			// save faces
+			for (unsigned int i = 0; i < m_triangles.size(); i++)
 			{
-				Eigen::Vector3f p(ps[3 * i + 0], ps[3 * i + 1], ps[3 * i + 2]);
-				m_normals.push_back(p);
+				outFile << "3 " << m_triangles[i].idx0 << " " << m_triangles[i].idx1 << " " << m_triangles[i].idx2 << std::endl;
 			}
 
-			delete ps;
+			// close file
+			outFile.close();
+
+			return true;
 		}
-		else
+
+	private:
+		std::vector<Vertex> m_vertices;
+		std::vector<Triangle> m_triangles;
+	};
+
+	class PointCloud
+	{
+	public:
+		bool ReadFromFile(const std::string& filename)
 		{
-			double* ps = new double[3 * n];
-
-			is.read((char*)ps, 3 * sizeof(double) * n);
-
-			for (unsigned int i = 0; i < n; i++)
+			std::ifstream is(filename, std::ios::in | std::ios::binary);
+			if (!is.is_open())
 			{
-				Eigen::Vector3f p((float)ps[3 * i + 0], (float)ps[3 * i + 1], (float)ps[3 * i + 2]);
-				m_points.push_back(p);
+				std::cout << "ERROR: unable to read input file!" << std::endl;
+				return false;
 			}
 
-			is.read((char*)ps, 3 * sizeof(double) * n);
+			char nBytes;
+			is.read(&nBytes, sizeof(char));
 
-			for (unsigned int i = 0; i < n; i++)
+			unsigned int n;
+			is.read((char*)&n, sizeof(unsigned int));
+
+			if (nBytes == sizeof(float))
 			{
-				Eigen::Vector3f p((float)ps[3 * i + 0], (float)ps[3 * i + 1], (float)ps[3 * i + 2]);
-				m_normals.push_back(p);
+				float* ps = new float[3 * n];
+
+				is.read((char*)ps, 3 * sizeof(float) * n);
+
+				for (unsigned int i = 0; i < n; i++)
+				{
+					Eigen::Vector3f p(ps[3 * i + 0], ps[3 * i + 1], ps[3 * i + 2]);
+					m_points.push_back(p);
+				}
+
+				is.read((char*)ps, 3 * sizeof(float) * n);
+				for (unsigned int i = 0; i < n; i++)
+				{
+					Eigen::Vector3f p(ps[3 * i + 0], ps[3 * i + 1], ps[3 * i + 2]);
+					m_normals.push_back(p);
+				}
+
+				delete ps;
+			}
+			else
+			{
+				double* ps = new double[3 * n];
+
+				is.read((char*)ps, 3 * sizeof(double) * n);
+
+				for (unsigned int i = 0; i < n; i++)
+				{
+					Eigen::Vector3f p((float)ps[3 * i + 0], (float)ps[3 * i + 1], (float)ps[3 * i + 2]);
+					m_points.push_back(p);
+				}
+
+				is.read((char*)ps, 3 * sizeof(double) * n);
+
+				for (unsigned int i = 0; i < n; i++)
+				{
+					Eigen::Vector3f p((float)ps[3 * i + 0], (float)ps[3 * i + 1], (float)ps[3 * i + 2]);
+					m_normals.push_back(p);
+				}
+
+				delete ps;
 			}
 
-			delete ps;
+
+			//std::ofstream file("pointcloud.off");
+			//file << "OFF" << std::endl;
+			//file << m_points.size() << " 0 0" << std::endl;
+			//for(unsigned int i=0; i<m_points.size(); ++i)
+			//	file << m_points[i].x() << " " << m_points[i].y() << " " << m_points[i].z() << std::endl;
+			//file.close();
+
+			return true;
 		}
 
-
-		//std::ofstream file("pointcloud.off");
-		//file << "OFF" << std::endl;
-		//file << m_points.size() << " 0 0" << std::endl;
-		//for(unsigned int i=0; i<m_points.size(); ++i)
-		//	file << m_points[i].x() << " " << m_points[i].y() << " " << m_points[i].z() << std::endl;
-		//file.close();
-
-		return true;
-	}
-
-	std::vector<Eigen::Vector3f>& GetPoints()
-	{
-		return m_points;
-	}
-
-	std::vector<Eigen::Vector3f>& GetNormals()
-	{
-		return m_normals;
-	}
-
-	unsigned int GetClosestPoint(Eigen::Vector3f& p)
-	{
-		unsigned int idx = 0;
-
-		float min_dist = std::numeric_limits<float>::max();
-		for (unsigned int i = 0; i < m_points.size(); ++i)
+		std::vector<Eigen::Vector3f>& GetPoints()
 		{
-			float dist = (p - m_points[i]).norm();
-			if (min_dist > dist)
-			{
-				idx = i;
-				min_dist = dist;
-			}
+			return m_points;
 		}
 
-		return idx;
-	}
+		std::vector<Eigen::Vector3f>& GetNormals()
+		{
+			return m_normals;
+		}
 
-private:
-	std::vector<Eigen::Vector3f> m_points;
-	std::vector<Eigen::Vector3f> m_normals;
+		unsigned int GetClosestPoint(Eigen::Vector3f& p)
+		{
+			unsigned int idx = 0;
 
-};
+			float min_dist = std::numeric_limits<float>::max();
+			for (unsigned int i = 0; i < m_points.size(); ++i)
+			{
+				float dist = (p - m_points[i]).norm();
+				if (min_dist > dist)
+				{
+					idx = i;
+					min_dist = dist;
+				}
+			}
+
+			return idx;
+		}
+
+	private:
+		std::vector<Eigen::Vector3f> m_points;
+		std::vector<Eigen::Vector3f> m_normals;
+
+	};
+
+}
 
 #endif // SIMPLE_MESH2_H
 

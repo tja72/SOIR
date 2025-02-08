@@ -36,7 +36,7 @@ public:
 class RBF : public ImplicitSurface
 {
 public:
-	RBF(PointCloud2 a_point_cloud)
+	RBF(simple_mesh2::PointCloud a_point_cloud)
 	{
 		// Create function samples
 		double eps = 0.01f;
@@ -135,7 +135,7 @@ private:
 	}
 
 	// point cloud
-	PointCloud2 m_pointcloud;
+	simple_mesh2::PointCloud m_pointcloud;
 
 	//! The given function samples (at each function sample, we place a basis function).
 	FunctionSamples m_funcSamp;

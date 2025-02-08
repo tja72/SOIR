@@ -9,7 +9,7 @@
 #include "SimpleMesh2.h"
 
 
-int applyRBF_MarchingCubes(PointCloud2 m_pointcloud) {
+int applyRBF_MarchingCubes(simple_mesh2::PointCloud m_pointcloud) {
 
 	ImplicitSurface* surface;
 	surface = new RBF(m_pointcloud);
@@ -31,7 +31,7 @@ int applyRBF_MarchingCubes(PointCloud2 m_pointcloud) {
 	}
 
 	// extract the zero iso-surface using marching cubes
-	SimpleMesh2 mesh;
+	simple_mesh2::SimpleMesh mesh;
 	for (unsigned int x = 0; x < vol.getDimX() - 1; x++)
 	{
 		std::cerr << "Marching Cubes on slice " << x << " of " << vol.getDimX() << std::endl;
