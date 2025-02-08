@@ -3,7 +3,7 @@
 #ifndef MARCHING_CUBES_H
 #define MARCHING_CUBES_H
 
-#include "SimpleMesh.h"
+#include "SimpleMesh2.h"
 #include "Volume.h"
 
 struct MC_Triangle {
@@ -412,7 +412,7 @@ int Polygonise(MC_Gridcell grid, double isolevel, MC_Triangle* triangles) {
 }
 
 
-bool ProcessVolumeCell(Volume* vol, int x, int y, int z, double iso, SimpleMesh* mesh)
+bool ProcessVolumeCell(Volume* vol, int x, int y, int z, double iso, SimpleMesh2* mesh)
 {
 	MC_Gridcell cell;
 
@@ -454,9 +454,9 @@ bool ProcessVolumeCell(Volume* vol, int x, int y, int z, double iso, SimpleMesh*
 
 	for (int i1 = 0; i1 < numTris; i1++)
 	{
-		Vertex v0((float)tris[i1].p[0][0], (float)tris[i1].p[0][1], (float)tris[i1].p[0][2]);
-		Vertex v1((float)tris[i1].p[1][0], (float)tris[i1].p[1][1], (float)tris[i1].p[1][2]);
-		Vertex v2((float)tris[i1].p[2][0], (float)tris[i1].p[2][1], (float)tris[i1].p[2][2]);
+		Vertex2 v0((float)tris[i1].p[0][0], (float)tris[i1].p[0][1], (float)tris[i1].p[0][2]);
+		Vertex2 v1((float)tris[i1].p[1][0], (float)tris[i1].p[1][1], (float)tris[i1].p[1][2]);
+		Vertex2 v2((float)tris[i1].p[2][0], (float)tris[i1].p[2][1], (float)tris[i1].p[2][2]);
 
 		unsigned int vhandle[3];
 		vhandle[0] = mesh->AddVertex(v0);

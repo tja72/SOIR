@@ -47,11 +47,11 @@ int applyRBF_MarchingCubes(PointCloud2 m_pointcloud) {
 
 	// write mesh to file
 	//last step, so we should write out the mesh here :)
-	if (!mesh.WriteMesh(filenameOut))
-	{
-		std::cout << "ERROR: unable to write output file!" << std::endl;
-		return -1;
-	}
+	//if (!mesh.WriteMesh(filenameOut))
+	//{
+	//	std::cout << "ERROR: unable to write output file!" << std::endl;
+	//	return -1;
+	//}
 
 	delete surface;
 

@@ -36,11 +36,11 @@ public:
 class RBF : public ImplicitSurface
 {
 public:
-	RBF(PointCloud2 m_point_cloud)
+	RBF(PointCloud2 a_point_cloud)
 	{
 		// Create function samples
 		double eps = 0.01f;
-
+		this->m_pointcloud = a_point_cloud;
 		// on surface points (-> center points of the RBFs)
 		for (unsigned int i = 0; i < m_pointcloud.GetPoints().size(); i++)
 		{
@@ -135,7 +135,7 @@ private:
 	}
 
 	// point cloud
-	PointCloud m_pointcloud;
+	PointCloud2 m_pointcloud;
 
 	//! The given function samples (at each function sample, we place a basis function).
 	FunctionSamples m_funcSamp;

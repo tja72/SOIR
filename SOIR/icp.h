@@ -12,7 +12,7 @@
 #define USE_POINT_TO_PLANE	1
 
 
-SimpleMesh constructObject(VirtualSensor sensor) {
+int constructObject(VirtualSensorOpenNI sensor) {
 
 	// We store a first frame as a reference frame. All next frames are tracked relatively to the first frame.
 	sensor.processNextFrame();
@@ -62,18 +62,19 @@ SimpleMesh constructObject(VirtualSensor sensor) {
 			//i'll keep that in, to be able to return a mesh for debugging purposes.
 			// BEWARE, fix the return if you want to use it.
 			//
-			//std::stringstream ss;
-			//ss << filenameBaseOut << sensor.getCurrentFrameCnt() << ".off";
-			//if (!resultingMesh.writeMesh(ss.str())) {
-			//	std::cout << "Failed to write mesh!\nCheck file path!" << std::endl;
-			//	return -1;
-			//
-			//}
+			std::string filenameBaseOut = "merged_pointcloud";
+			std::stringstream ss;
+			ss << filenameBaseOut << sensor.getCurrentFrameCnt() << ".off";
+			if (!resultingMesh.writeMesh(ss.str())) {
+				std::cout << "Failed to write mesh!\nCheck file path!" << std::endl;
+				return -1;
+			
+			}
 		}
 
 		i++;
 	}
 
-	return resultingMesh;
+	return 0;
 }
 

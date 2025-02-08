@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef SIMPLE_MESH_H
+#define SIMPLE_MESH_H
+
 #include <iostream>
 #include <fstream>
 
@@ -437,3 +440,4 @@ private:
 	}
 };
 
+#endif // SIMPLE_MESH_H
