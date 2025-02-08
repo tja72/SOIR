@@ -11,6 +11,8 @@
 #include "NearestNeighbor.h"
 #include "PointCloud.h"
 
+using namespace point_cloud;
+using namespace simple_mesh1;
 
 /**
  * Helper methods for writing Ceres cost functions.
@@ -210,7 +212,7 @@ public:
 		m_nIterations = nIterations;
 	}
 
-	Matrix4f estimatePose(const PointCloud& source, const PointCloud& target, Matrix4f initialPose = Matrix4f::Identity()) {
+	Matrix4f estimatePose(const point_cloud::PointCloud& source, const point_cloud::PointCloud& target, Matrix4f initialPose = Matrix4f::Identity()) {
 		// Build the index of the FLANN tree (for fast nearest neighbor lookup).
 		m_nearestNeighborSearch->buildIndex(target.getPoints());
 

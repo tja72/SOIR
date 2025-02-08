@@ -8,6 +8,7 @@
 #include "PointCloud.h"
 #include "SimpleMesh2.h"
 
+using namespace simple_mesh2;
 
 int applyRBF_MarchingCubes(simple_mesh2::PointCloud m_pointcloud) {
 

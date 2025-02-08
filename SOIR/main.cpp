@@ -15,7 +15,8 @@
 #include "icp.h"
 #include "rbf.h"
 
-
+using namespace simple_mesh1;
+using namespace point_cloud;
 
 // --------------------------------
 // Defines
@@ -44,7 +45,7 @@
 
 
 
-void removeBackground(PointCloud* pointCloud) {
+void removeBackground(point_cloud::PointCloud* pointCloud) {
 	//should return VirtualSensor
 	return;
 }
@@ -80,7 +81,7 @@ int main() {
 	std::vector<Matrix4f> estimatedPoses;
 	Matrix4f currentCameraToWorld = Matrix4f::Identity();
 	estimatedPoses.push_back(currentCameraToWorld.inverse());
-	PointCloud target;
+	point_cloud::PointCloud target;
 
 	int i = 0;
 	while (sensor.processNextFrame()) {
@@ -100,12 +101,12 @@ int main() {
 		// We downsample the source image to speed up the correspondence matching.
 		if (i == 0) {
 			// We store a first frame as a reference frame. All next frames are tracked relatively to the first frame.
-			target = PointCloud{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight() };
+			target = point_cloud::PointCloud{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight() };
 			removeBackground(&target); // TODO
 			
 		}
 		else {
-			PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
+			point_cloud::PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
 			removeBackground(&source); // TODO
 			currentCameraToWorld = optimizer.estimatePose(source, target, currentCameraToWorld);
 		}
@@ -117,9 +118,9 @@ int main() {
 
 		
 		// We write out the mesh to file for debugging.
-		SimpleMesh currentDepthMesh{ sensor, currentCameraPose, 0.1f };
-		SimpleMesh currentCameraMesh = SimpleMesh::camera(currentCameraPose, 0.0015f);
-		SimpleMesh resultingMesh = SimpleMesh::joinMeshes(currentDepthMesh, currentCameraMesh, Matrix4f::Identity());
+		simple_mesh1::SimpleMesh currentDepthMesh{ sensor, currentCameraPose, 0.1f };
+		simple_mesh1::SimpleMesh currentCameraMesh = simple_mesh1::SimpleMesh::camera(currentCameraPose, 0.0015f);
+		simple_mesh1::SimpleMesh resultingMesh = simple_mesh1::SimpleMesh::joinMeshes(currentDepthMesh, currentCameraMesh, Matrix4f::Identity());
 
 		std::stringstream ss;
 		ss << OUTPUT_FILE_NAME << sensor.getCurrentFrameCnt() << ".off";

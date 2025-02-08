@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="FreeImageHelper.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Volume.cpp" />
     <ClInclude Include="icp.h" />
     <ClInclude Include="ImplicitSurface.h" />
     <ClInclude Include="MarchingCubes.h" />

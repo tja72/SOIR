@@ -8,6 +8,9 @@
 #include "ICPOptimizer.h"
 #include "PointCloud.h"
 
+using namespace simple_mesh1;
+using namespace point_cloud;
+
 //ill kept this from the exercise, can be integrated into parameters later
 #define USE_POINT_TO_PLANE	1
 
@@ -16,7 +19,7 @@ int constructObject(VirtualSensorOpenNI sensor) {
 
 	// We store a first frame as a reference frame. All next frames are tracked relatively to the first frame.
 	sensor.processNextFrame();
-	PointCloud target{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight() };
+	point_cloud::PointCloud target{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight() };
 
 	// Setup the optimizer.
 	ICPOptimizer optimizer;
@@ -47,7 +50,7 @@ int constructObject(VirtualSensorOpenNI sensor) {
 
 		// Estimate the current camera pose from source to target mesh with ICP optimization.
 		// We downsample the source image to speed up the correspondence matching.
-		PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
+		point_cloud::PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
 		currentCameraToWorld = optimizer.estimatePose(source, target, currentCameraToWorld);
 
 
@@ -58,9 +61,9 @@ int constructObject(VirtualSensorOpenNI sensor) {
 
 		if (i % 5 == 0) {
 
-			SimpleMesh currentDepthMesh{ sensor, currentCameraPose, 0.1f };
-			SimpleMesh currentCameraMesh = SimpleMesh::camera(currentCameraPose, 0.0015f);
-			SimpleMesh resultingMesh = SimpleMesh::joinMeshes(currentDepthMesh, currentCameraMesh, Matrix4f::Identity());
+			simple_mesh1::SimpleMesh currentDepthMesh{ sensor, currentCameraPose, 0.1f };
+			simple_mesh1::SimpleMesh currentCameraMesh = simple_mesh1::SimpleMesh::camera(currentCameraPose, 0.0015f);
+			simple_mesh1::SimpleMesh resultingMesh = simple_mesh1::SimpleMesh::joinMeshes(currentDepthMesh, currentCameraMesh, Matrix4f::Identity());
 
 			//i'll keep that in, to be able to return a mesh for debugging purposes.
 			// BEWARE, fix the return if you want to use it.

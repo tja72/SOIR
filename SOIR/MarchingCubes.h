@@ -6,6 +6,9 @@
 #include "SimpleMesh2.h"
 #include "Volume.h"
 
+using namespace simple_mesh2;
+
+
 struct MC_Triangle {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 		Vector3d p[3];
