@@ -54,11 +54,12 @@ public:
 		m_depthImageHeight = 240;
 
 		// Intrinsics TODO
-		m_colorIntrinsics << 525.0f, 0.0f, 319.5f,
-			0.0f, 525.0f, 239.5f,
+		m_colorIntrinsics << 537.002f, 0.0f, 319.259f,
+			0.0f, 536.66f, 233.608f,
 			0.0f, 0.0f, 1.0f;
 
 		m_depthIntrinsics = m_colorIntrinsics; //TODO
+		
 
 		m_colorExtrinsics.setIdentity();
 		m_depthExtrinsics.setIdentity();
@@ -93,14 +94,15 @@ public:
 		}
 
 		// check width, height, timestamp and format
-		// why different timestamp here???? m_colorImagesTimeStamps[m_currentIdx] != header.timestamp ||
-		if (m_colorImageHeight != header.height || m_colorImageWidth != header.width ||  IMAGE != header.filetype) {
+		// why different timestamp here???? m_colorImagesTimeStamps[m_currentIdx] != header.timestamp ||s
+		
+		if (m_colorImageHeight != header.height || m_colorImageWidth != header.width || IMAGE != header.filetype) {
 			std::cerr << "Header error while trying to read file " << filename << "\n" << std::endl;
 			return false;
 		}
 
 		// read data
-		inputFile.read(reinterpret_cast<char*>(m_colorFrame), m_colorImageHeight * m_colorImageWidth * sizeof(BYTE) * 3);
+		inputFile.read(reinterpret_cast<char*>(m_colorFrame), m_colorImageHeight * m_colorImageWidth * sizeof(BYTE) * 3); // TODO * 4? -------------------
 
 		if (inputFile.fail()) {
 			std::cerr << "Failed to read image data from file." << std::endl;
@@ -152,7 +154,7 @@ public:
 			if (depthData[i] == 0)
 				m_depthFrame[i] = MINF;
 			else
-				m_depthFrame[i] = depthData[i] * 1.0f; // TODO correct? / 5000.0f; -----------------------------------------
+				m_depthFrame[i] = depthData[i] * 1.0f / 5000.0f; // TODO correct? / 5000.0f; -----------------------------------------
 		}
 
 		// clean up
@@ -262,7 +264,7 @@ public:
 	}**/
 
 private:
-	bool readFileList(const std::string& filename, std::vector<std::string>& result, std::vector<double>& timestamps) {
+	bool readFileList(const std::string& filename, std::vector<std::string>& result, std::vector<uint64_t>& timestamps) {
 		std::ifstream fileDepthList(filename, std::ios::in);
 		if (!fileDepthList.is_open()) return false;
 		result.clear();
@@ -346,10 +348,10 @@ private:
 	std::string m_baseDir;
 	// filenamelist depth
 	std::vector<std::string> m_filenameDepthImages;
-	std::vector<double> m_depthImagesTimeStamps;
+	std::vector<uint64_t> m_depthImagesTimeStamps;
 	// filenamelist color
 	std::vector<std::string> m_filenameColorImages;
-	std::vector<double> m_colorImagesTimeStamps;
+	std::vector<uint64_t> m_colorImagesTimeStamps;
 
 	// trajectory
 	std::vector<Eigen::Matrix4f> m_trajectory;

@@ -41,7 +41,7 @@ using namespace xn;
 // --------------------------------
 // Defines
 // --------------------------------
-#define CAPTURED_FRAMES_DIR_NAME "../../data/Dataset_0"
+#define CAPTURED_FRAMES_DIR_NAME "../../data/Dataset_5.0"
 
 // --------------------------------
 // Types
@@ -92,7 +92,7 @@ typedef struct RawHeader {
 	FileType filetype;
 	int width;
 	int height;
-	std::string timestamp;
+	uint64_t timestamp;
 
 } RawHeader;
 
@@ -112,7 +112,7 @@ static const XnCodecID CODEC_DONT_CAPTURE = XN_CODEC_NULL;
 bool isCapturingTxt = false;
 bool closeRecording = false;
 int hasNewFrame = 0;
-int captureFrameRate = 1;
+int captureFrameRate = 5;
 bool closeCapturingTxt = false;
 
 std::vector<std::tuple<std::string, std::string>> listOfDepthNamesTxt;
@@ -877,12 +877,12 @@ void captureSingleFrame(int)
 	// safe filenames and timestamp for overview txt files
 	XnChar tempTimestampName[XN_FILE_MAX_PATH];
 	XnChar tempFileName[XN_FILE_MAX_PATH];
-	sprintf(tempTimestampName, "%d.%d", curr_time, pImageMD->Timestamp());
+	sprintf(tempTimestampName, "%d", pImageMD->Timestamp());
 	sprintf(tempFileName, "Image_%d.%d.raw", curr_time, pImageMD->Timestamp());
 	listOfImageNamesTxt.push_back(std::make_tuple(tempTimestampName, tempFileName));
 
 	XnChar tempTimestampName2[XN_FILE_MAX_PATH];
-	sprintf(tempTimestampName2, "%d.%d", curr_time, pDepthMD->Timestamp());
+	sprintf(tempTimestampName2, "%d", pDepthMD->Timestamp());
 	sprintf(tempFileName, "Depth_%d.%d.raw", curr_time, pDepthMD->Timestamp());
 	listOfDepthNamesTxt.push_back(std::make_tuple(tempTimestampName2, tempFileName));
 

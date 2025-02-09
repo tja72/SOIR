@@ -5,6 +5,9 @@
 
 #include "Eigen.h"
 
+#define COLOR_THRESHOLD 50
+#define DEPTH_THRESHOLD .2//.3f
+
 struct Vertex {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -25,6 +28,35 @@ struct Triangle {
 		idx0(_idx0), idx1(_idx1), idx2(_idx2) {}
 };
 
+float* removeBackground(float* depthMap, BYTE* colorMap, unsigned int width, unsigned int height) {
+
+
+	float* newDepthMap = new float[width * height];
+
+	//#pragma omp parallel for
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			unsigned int idx = i * width + j;
+			BYTE r = colorMap[3 * idx + 0];
+			BYTE g = colorMap[3 * idx + 1];
+			BYTE b = colorMap[3 * idx + 2];
+			float depth = depthMap[idx];
+
+			if (r < COLOR_THRESHOLD && g < COLOR_THRESHOLD && b < COLOR_THRESHOLD && depth < DEPTH_THRESHOLD) {
+				newDepthMap[idx] = depthMap[idx];
+
+			}
+			else {
+				newDepthMap[idx] = -std::numeric_limits<float>::infinity();
+
+			}
+
+
+		}
+	}
+	return newDepthMap;
+}
+
 
 class SimpleMesh {
 public:
@@ -33,10 +65,10 @@ public:
 	/**
 	 * Constructs a mesh from the current color and depth image.
 	 */
-	SimpleMesh(VirtualSensorOpenNI& sensor, const Matrix4f& cameraPose, float edgeThreshold = 0.01f) {
+	SimpleMesh(VirtualSensorOpenNI& sensor, const Matrix4f& cameraPose, float edgeThreshold = 0.015f) {
 		// Get ptr to the current depth frame.
 		// Depth is stored in row major (get dimensions via sensor.GetDepthImageWidth() / GetDepthImageHeight()).
-		float* depthMap = sensor.getDepth();
+		float* depthMap = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
 		// Get ptr to the current color frame.
 		// Color is stored as RGBX in row major (4 byte values per pixel, get dimensions via sensor.GetColorImageWidth() / GetColorImageHeight()).
 		BYTE* colorMap = sensor.getColorRGBX();
