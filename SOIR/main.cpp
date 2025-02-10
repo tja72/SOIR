@@ -13,6 +13,15 @@
 #include "ProcrustesAligner.h"
 #include "PointCloud.h"
 
+#include <vector>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/segmentation/extract_clusters.h>
+
+using PointT = pcl::PointXYZRGB; // Assuming your point cloud has color info
+using PointCloudT = pcl::PointCloud<PointT>;
 
 // --------------------------------
 // Defines
@@ -38,14 +47,81 @@
 //		Include/add ICP/Optimizer
 //		after that: add task specific steps (turn around object etc...)
 
+PointCloudT removeColorRange(const PointCloudT& inputCloud,
+	int r_min, int r_max,
+	int g_min, int g_max,
+	int b_min, int b_max) {
+	PointCloudT outputCloud;
 
+	for (const auto& point : inputCloud.points) {
+		// Extract RGB values
+		int r = point.r;
+		int g = point.g;
+		int b = point.b;
 
+		// Check if the point falls within the unwanted color range
+		if (!(r_min <= r && r <= r_max &&
+			g_min <= g && g <= g_max &&
+			b_min <= b && b <= b_max)) {
+			outputCloud.points.push_back(point);
+		}
+	}
 
+	outputCloud.width = outputCloud.points.size();
+	outputCloud.height = 1;
+	outputCloud.is_dense = true;
 
+	return outputCloud;
+}
+
+PointCloudT removeBackground(const PointCloudT& inputCloud) {
+	PointCloudT::Ptr cloudFiltered(new PointCloudT);
+
+	// Filter points beyond a depth threshold
+	pcl::PassThrough<PointT> pass;
+	pass.setInputCloud(inputCloud.makeShared()); // Convert to shared pointer
+	pass.setFilterFieldName("z");
+	pass.setFilterLimits(0.0, 1.15); // Keep points below 1.15cm (discance between points and camera)
+	pass.filter(*cloudFiltered);
+
+	// Remove statistical outliers
+	pcl::StatisticalOutlierRemoval<PointT> sor;
+	sor.setInputCloud(cloudFiltered);
+	sor.setMeanK(50); // Consider 50 nearest neighbors
+	sor.setStddevMulThresh(1.0);
+	sor.filter(*cloudFiltered);
+
+	// Cluster extraction using KD tree to isolate foreground object
+	std::vector<pcl::PointIndices> clusterIndices;
+	pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+	tree->setInputCloud(cloudFiltered);
+
+	pcl::EuclideanClusterExtraction<PointT> ec;
+	ec.setClusterTolerance(0.02); // 2 cm cluster distance
+	ec.setMinClusterSize(100); // Minimum 100 points per cluster
+	ec.setMaxClusterSize(50000); // Max 50,000 points per cluster
+	ec.setSearchMethod(tree);
+	ec.setInputCloud(cloudFiltered);
+	ec.extract(clusterIndices);
+
+	// Extract largest cluster (assuming the object in the foreground)
+	PointCloudT::Ptr largestCluster(new PointCloudT);
+	if (!clusterIndices.empty()) {
+		pcl::PointIndices largest = clusterIndices[0]; // The first cluster is usually the largest
+		for (int index : largest.indices) {
+			largestCluster->points.push_back(cloudFiltered->points[index]);
+		}
+		largestCluster->width = largestCluster->points.size();
+		largestCluster->height = 1;
+		largestCluster->is_dense = true;
+	}
+
+	return *largestCluster;
+}
 
 
 int main() {
-
+	int r_min, r_max, g_min, g_max, b_min, b_max; // TODO set to color range of background
 	// initialize Camera (Intrinsics/Extrinsics)
 
 	
@@ -62,6 +138,14 @@ int main() {
 	sensor.processNextFrame();
 	float* depthMapObj = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
 	PointCloud target = PointCloud{ depthMapObj, sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight() };
+	PointCloudT targetWithoutBackground = removeBackground(&target);
+	// Remove points of a certain color spectrum only found in the background
+	PointCloud targetWithoutBackgroundColoredBits = removeColorRange(
+		&targetWithoutBackground,
+		r_min, r_max,
+		g_min, g_max,
+		b_min, b_max
+	);
 
 	
 			// Estimate the current camera pose from source to target mesh with ICP optimization.
@@ -109,6 +193,13 @@ int main() {
 		float* depthMapObj2;
 		depthMapObj2 = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
 		PointCloud source{ depthMapObj2, sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
+		PointCloud sourceWithoutBackground = removeBackground(&source);
+		PointCloud targetWithoutBackgroundColoredBits = removeColorRange(
+			&sourceWithoutBackground,
+			r_min, r_max,
+			g_min, g_max,
+			b_min, b_max
+		);
 		currentCameraToWorld = optimizer.estimatePose(source, target, currentCameraToWorld);
 		
 
@@ -141,6 +232,7 @@ int main() {
 	
 
 	// extract Background
+
 
 	// ICP
 
