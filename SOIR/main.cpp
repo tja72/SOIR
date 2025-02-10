@@ -120,6 +120,54 @@ PointCloudT removeBackground(const PointCloudT& inputCloud) {
 }
 
 
+pcl::PointCloud<PointT> mapToPointCloud(float* depthMap, BYTE* colorMap, unsigned int width, unsigned int height, Eigen::Matrix3f colorIntrinsics, Eigen::Matrix4f colorExtrinsics, Eigen::Matrix3f depthIntrinsics, Eigen::Matrix4f depthExtrinsics) {
+
+
+	pcl::PointCloud<PointT> cloud;
+	float fx = depthIntrinsics(0, 0);
+	float fy = depthIntrinsics(1, 1);
+	float cx = depthIntrinsics(0, 2);
+	float cy = depthIntrinsics(1, 2);
+
+	for (unsigned int i = 0; i < height; ++i) {
+		for (unsigned int j = 0; j < width; ++j) {
+			unsigned int idx = i * width + j;
+			float depth = depthMap[idx];
+
+			if (depth > 0) { // Nur gültige Tiefenwerte verwenden
+				float x = (j - cx) * depth / fx;
+				float y = (i - cy) * depth / fy;
+				float z = depth;
+
+				// Transformiere die Tiefenkoordinaten in die RGB-Kamera-Koordinaten
+				Eigen::Vector4f depthPoint(x, y, z, 1.0f);
+				Eigen::Vector4f rgbPoint = colorExtrinsics * depthExtrinsics.inverse() * depthPoint;
+
+				BYTE r = colorMap[4 * idx + 0];
+				BYTE g = colorMap[4 * idx + 1];
+				BYTE b = colorMap[4 * idx + 2];
+
+				PointT point;
+				point.x = rgbPoint.x();
+				point.y = rgbPoint.y();
+				point.z = rgbPoint.z();
+				point.r = r;
+				point.g = g;
+				point.b = b;
+
+				cloud.points.push_back(point);
+			}
+		}
+	}
+
+	cloud.width = cloud.points.size();
+	cloud.height = 1;
+	cloud.is_dense = false;
+
+	return cloud;
+}
+
+
 int main() {
 	int r_min, r_max, g_min, g_max, b_min, b_max; // TODO set to color range of background
 	// initialize Camera (Intrinsics/Extrinsics)
