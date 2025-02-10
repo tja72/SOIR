@@ -4,5 +4,5 @@ SOIR/libs/
 SOIR/Debug/
 SOIR/x64/
 SOIR/SOIR/
-
+*.user
 results/
