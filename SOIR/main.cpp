@@ -167,6 +167,17 @@ pcl::PointCloud<PointT> mapToPointCloud(float* depthMap, BYTE* colorMap, unsigne
 	return cloud;
 }
 
+PointCloud convertToPointCloud(pcl::PointCloud<PointT>& pc) {
+	SimpleMesh mesh;
+	// iterate over all points in the pc
+	for (const auto& point : pc.points) {
+		// add the point to the cloud
+		mesh.addVertex({ Vector4f(point.x, point.y, point.z, 1.0f), Vector4uc(point.r, point.g, point.b, 1.0f) });
+	}
+
+	PointCloud cloud = PointCloud(mesh);
+	return cloud;
+}
 
 int main() {
 	int r_min, r_max, g_min, g_max, b_min, b_max; // TODO set to color range of background
