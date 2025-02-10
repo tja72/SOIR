@@ -1,5 +1,7 @@
 #pragma once
 
+#define PCL_NO_PRECOMPILE
+
 #include <iostream>
 #include <fstream>
 #include <omp.h>
@@ -51,7 +53,7 @@ std::shared_ptr<pcl::PointCloud<PointT>> removeColorRange(const pcl::PointCloud<
 	int r_min, int r_max,
 	int g_min, int g_max,
 	int b_min, int b_max) {
-	std::shared_ptr<pcl::PointCloud<PointT>> outputCloud;
+	std::shared_ptr<pcl::PointCloud<PointT>> outputCloud(new pcl::PointCloud<PointT>);
 
 	for (const auto& point : inputCloud->points) {
 		// Extract RGB values
