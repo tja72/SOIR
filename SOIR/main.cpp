@@ -188,7 +188,7 @@ std::shared_ptr<pcl::PointCloud<PointT>> mapToPointCloud(float* depthMap, BYTE* 
 			unsigned int idx = i * width + j;
 			float depth = depthMap[idx];
 
-			if (depth > 0) { // Nur gültige Tiefenwerte verwenden
+			if (depth > 0) { // Nur gï¿½ltige Tiefenwerte verwenden
 				float x = (j - cx) * depth / fx;
 				float y = (i - cy) * depth / fy;
 				float z = depth;
@@ -334,10 +334,10 @@ int main() {
 		
 		// We write out the mesh to file for debugging.
 		//SimpleMesh currentDepthMesh{ sensor, currentCameraPose, 0.0015f};
-		SimpleMesh currentDepthMesh{ sourceWithoutBackgroundColoredBits.get(), currentCameraToWorld, 0.1f };
+		SimpleMesh currentDepthMesh{ sourceWithoutBackgroundColoredBits.get(), currentCameraToWorld, 0.0015f };
 		SimpleMesh currentCameraMesh = SimpleMesh::camera(currentCameraPose, 0.001f);
 		SimpleMesh resultingMesh = SimpleMesh::joinMeshes(currentDepthMesh, currentCameraMesh, Matrix4f::Identity());
-		finalMesh = SimpleMesh::joinMeshes(finalMesh, currentDepthMesh, currentCameraToWorld);
+		finalMesh = SimpleMesh::joinMeshes(finalMesh, currentDepthMesh, Matrix4f::Identity());
 		std::stringstream ss;
 		ss << OUTPUT_FILE_NAME << sensor.getCurrentFrameCnt() << ".off";
 		if (!currentDepthMesh.writeMesh(ss.str())) {
