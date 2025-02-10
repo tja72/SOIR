@@ -21,7 +21,7 @@
 #include <pcl/segmentation/extract_clusters.h>
 
 using PointT = pcl::PointXYZRGB; // Assuming your point cloud has color info
-using PointCloudT = pcl::PointCloud<PointT>;
+//using pcl::PointCloud<PointT> = pcl::PointCloud<PointT>;
 
 // --------------------------------
 // Defines
@@ -47,11 +47,11 @@ using PointCloudT = pcl::PointCloud<PointT>;
 //		Include/add ICP/Optimizer
 //		after that: add task specific steps (turn around object etc...)
 
-PointCloudT removeColorRange(const PointCloudT& inputCloud,
+pcl::PointCloud<PointT> removeColorRange(const pcl::PointCloud<PointT>& inputCloud,
 	int r_min, int r_max,
 	int g_min, int g_max,
 	int b_min, int b_max) {
-	PointCloudT outputCloud;
+	pcl::PointCloud<PointT> outputCloud;
 
 	for (const auto& point : inputCloud.points) {
 		// Extract RGB values
@@ -74,8 +74,8 @@ PointCloudT removeColorRange(const PointCloudT& inputCloud,
 	return outputCloud;
 }
 
-PointCloudT removeBackground(const PointCloudT& inputCloud) {
-	PointCloudT::Ptr cloudFiltered(new PointCloudT);
+pcl::PointCloud<PointT> removeBackground(const pcl::PointCloud<PointT>& inputCloud) {
+	pcl::PointCloud<PointT>::Ptr cloudFiltered(new pcl::PointCloud<PointT>);
 
 	// Filter points beyond a depth threshold
 	pcl::PassThrough<PointT> pass;
@@ -105,7 +105,7 @@ PointCloudT removeBackground(const PointCloudT& inputCloud) {
 	ec.extract(clusterIndices);
 
 	// Extract largest cluster (assuming the object in the foreground)
-	PointCloudT::Ptr largestCluster(new PointCloudT);
+	pcl::PointCloud<PointT>::Ptr largestCluster(new pcl::PointCloud<PointT>);
 	if (!clusterIndices.empty()) {
 		pcl::PointIndices largest = clusterIndices[0]; // The first cluster is usually the largest
 		for (int index : largest.indices) {
@@ -119,10 +119,7 @@ PointCloudT removeBackground(const PointCloudT& inputCloud) {
 	return *largestCluster;
 }
 
-
 pcl::PointCloud<PointT> mapToPointCloud(float* depthMap, BYTE* colorMap, unsigned int width, unsigned int height, Eigen::Matrix3f colorIntrinsics, Eigen::Matrix4f colorExtrinsics, Eigen::Matrix3f depthIntrinsics, Eigen::Matrix4f depthExtrinsics) {
-
-
 	pcl::PointCloud<PointT> cloud;
 	float fx = depthIntrinsics(0, 0);
 	float fy = depthIntrinsics(1, 1);
@@ -172,7 +169,7 @@ PointCloud convertToPointCloud(pcl::PointCloud<PointT>& pc) {
 	// iterate over all points in the pc
 	for (const auto& point : pc.points) {
 		// add the point to the cloud
-		mesh.addVertex({ Vector4f(point.x, point.y, point.z, 1.0f), Vector4uc(point.r, point.g, point.b, 1.0f) });
+		mesh.addVertex(Vertex{ Vector4f(point.x, point.y, point.z, 1.0f), Vector4uc(point.r, point.g, point.b, 1.0f) });
 	}
 
 	PointCloud cloud = PointCloud(mesh);
@@ -180,7 +177,13 @@ PointCloud convertToPointCloud(pcl::PointCloud<PointT>& pc) {
 }
 
 int main() {
-	int r_min, r_max, g_min, g_max, b_min, b_max; // TODO set to color range of background
+	// TODO set to color range of background
+	int r_min = 0;
+	int r_max = 0;
+	int g_min = 0;
+	int g_max = 0;
+	int b_min = 0;
+	int b_max = 0; 
 	// initialize Camera (Intrinsics/Extrinsics)
 
 	
@@ -195,12 +198,12 @@ int main() {
 
 	// We store a first frame as a reference frame. All next frames are tracked relatively to the first frame.
 	sensor.processNextFrame();
-	float* depthMapObj = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
-	PointCloud target = PointCloud{ depthMapObj, sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight() };
-	PointCloudT targetWithoutBackground = removeBackground(&target);
+	//float* depthMapObj = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
+	pcl::PointCloud<PointT> target = mapToPointCloud(sensor.getDepth(), sensor.getColorRGBX(), sensor.getColorImageWidth(), sensor.getColorImageHeight(), sensor.getColorIntrinsics(), sensor.getColorExtrinsics(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics());
+	pcl::PointCloud<PointT> targetWithoutBackground = removeBackground(target);
 	// Remove points of a certain color spectrum only found in the background
-	PointCloud targetWithoutBackgroundColoredBits = removeColorRange(
-		&targetWithoutBackground,
+	pcl::PointCloud<PointT> targetWithoutBackgroundColoredBits = removeColorRange(
+		targetWithoutBackground,
 		r_min, r_max,
 		g_min, g_max,
 		b_min, b_max
@@ -249,19 +252,19 @@ int main() {
 		// Estimate the current camera pose from source to target mesh with ICP optimization.
 		// We downsample the source image to speed up the correspondence matching.
 
-		float* depthMapObj2;
-		depthMapObj2 = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
-		PointCloud source{ depthMapObj2, sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
-		PointCloud sourceWithoutBackground = removeBackground(&source);
-		PointCloud targetWithoutBackgroundColoredBits = removeColorRange(
-			&sourceWithoutBackground,
+		//float* depthMapObj2;
+		//depthMapObj2 = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
+		//PointCloud source{ depthMapObj2, sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
+		pcl::PointCloud<PointT> source = mapToPointCloud(sensor.getDepth(), sensor.getColorRGBX(), sensor.getColorImageWidth(), sensor.getColorImageHeight(), sensor.getColorIntrinsics(), sensor.getColorExtrinsics(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics());
+		pcl::PointCloud<PointT> sourceWithoutBackground = removeBackground(source);
+		pcl::PointCloud<PointT> targetWithoutBackgroundColoredBits = removeColorRange(
+			sourceWithoutBackground,
 			r_min, r_max,
 			g_min, g_max,
 			b_min, b_max
 		);
-		currentCameraToWorld = optimizer.estimatePose(source, target, currentCameraToWorld);
+		currentCameraToWorld = optimizer.estimatePose(convertToPointCloud(sourceWithoutBackground), convertToPointCloud(targetWithoutBackground), currentCameraToWorld);
 		
-
 		// Invert the transformation matrix to get the current camera pose.
 		Matrix4f currentCameraPose = currentCameraToWorld.inverse();
 		std::cout << "Current camera pose: " << std::endl << currentCameraPose << std::endl;
