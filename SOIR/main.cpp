@@ -47,13 +47,13 @@ using PointT = pcl::PointXYZRGB; // Assuming your point cloud has color info
 //		Include/add ICP/Optimizer
 //		after that: add task specific steps (turn around object etc...)
 
-pcl::PointCloud<PointT> removeColorRange(const pcl::PointCloud<PointT>& inputCloud,
+std::shared_ptr<pcl::PointCloud<PointT>> removeColorRange(const pcl::PointCloud<PointT>* inputCloud,
 	int r_min, int r_max,
 	int g_min, int g_max,
 	int b_min, int b_max) {
-	pcl::PointCloud<PointT> outputCloud;
+	std::shared_ptr<pcl::PointCloud<PointT>> outputCloud;
 
-	for (const auto& point : inputCloud.points) {
+	for (const auto& point : inputCloud->points) {
 		// Extract RGB values
 		int r = point.r;
 		int g = point.g;
@@ -63,64 +63,85 @@ pcl::PointCloud<PointT> removeColorRange(const pcl::PointCloud<PointT>& inputClo
 		if (!(r_min <= r && r <= r_max &&
 			g_min <= g && g <= g_max &&
 			b_min <= b && b <= b_max)) {
-			outputCloud.points.push_back(point);
+			outputCloud->points.push_back(point);
 		}
 	}
 
-	outputCloud.width = outputCloud.points.size();
-	outputCloud.height = 1;
-	outputCloud.is_dense = true;
+	outputCloud->width = outputCloud->points.size();
+	outputCloud->height = 1;
+	outputCloud->is_dense = true;
 
 	return outputCloud;
 }
 
-pcl::PointCloud<PointT> removeBackground(const pcl::PointCloud<PointT>& inputCloud) {
-	pcl::PointCloud<PointT>::Ptr cloudFiltered(new pcl::PointCloud<PointT>);
-
+std::shared_ptr<pcl::PointCloud<PointT>> removeBackground(const pcl::PointCloud<PointT>* inputCloud) {
+	pcl::PointCloud<PointT>::Ptr cloudFilteredOnce(new pcl::PointCloud<PointT>);
+	pcl::PointCloud<PointT>::Ptr cloudFilteredTwice(new pcl::PointCloud<PointT>);
+	if (inputCloud == nullptr) {
+		std::cerr << "Error: inputCloud is null." << std::endl;
+		return std::make_shared<pcl::PointCloud<PointT>>();
+	}
 	// Filter points beyond a depth threshold
 	pcl::PassThrough<PointT> pass;
-	pass.setInputCloud(inputCloud.makeShared()); // Convert to shared pointer
+	pass.setInputCloud(inputCloud->makeShared()); // Convert to shared pointer
 	pass.setFilterFieldName("z");
-	pass.setFilterLimits(0.0, 1.15); // Keep points below 1.15cm (discance between points and camera)
-	pass.filter(*cloudFiltered);
+	pass.setFilterLimits(0.0, 1.15); // Keep points below 1.15cm (distance between points and camera)
+	pass.filter(*cloudFilteredOnce);
+
+	if (cloudFilteredOnce->empty()) {
+		std::cerr << "Error: cloudFilteredOnce is empty." << std::endl;
+		return std::make_shared<pcl::PointCloud<PointT>>();
+	}
 
 	// Remove statistical outliers
 	pcl::StatisticalOutlierRemoval<PointT> sor;
-	sor.setInputCloud(cloudFiltered);
+	sor.setInputCloud(cloudFilteredOnce);
 	sor.setMeanK(50); // Consider 50 nearest neighbors
 	sor.setStddevMulThresh(1.0);
-	sor.filter(*cloudFiltered);
+	sor.filter(*cloudFilteredTwice);
 
+	if (cloudFilteredTwice->empty()) {
+		std::cerr << "Error: cloudFilteredTwice is empty." << std::endl;
+		return std::make_shared<pcl::PointCloud<PointT>>();
+	}
 	// Cluster extraction using KD tree to isolate foreground object
 	std::vector<pcl::PointIndices> clusterIndices;
 	pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
-	tree->setInputCloud(cloudFiltered);
+	tree->setInputCloud(cloudFilteredTwice);
 
 	pcl::EuclideanClusterExtraction<PointT> ec;
 	ec.setClusterTolerance(0.02); // 2 cm cluster distance
 	ec.setMinClusterSize(100); // Minimum 100 points per cluster
 	ec.setMaxClusterSize(50000); // Max 50,000 points per cluster
 	ec.setSearchMethod(tree);
-	ec.setInputCloud(cloudFiltered);
+	ec.setInputCloud(cloudFilteredTwice);
 	ec.extract(clusterIndices);
 
-	// Extract largest cluster (assuming the object in the foreground)
-	pcl::PointCloud<PointT>::Ptr largestCluster(new pcl::PointCloud<PointT>);
-	if (!clusterIndices.empty()) {
-		pcl::PointIndices largest = clusterIndices[0]; // The first cluster is usually the largest
-		for (int index : largest.indices) {
-			largestCluster->points.push_back(cloudFiltered->points[index]);
-		}
-		largestCluster->width = largestCluster->points.size();
-		largestCluster->height = 1;
-		largestCluster->is_dense = true;
+	if (clusterIndices.empty()) {
+		std::cerr << "Error: No clusters found." << std::endl;
+		return std::make_shared<pcl::PointCloud<PointT>>();
 	}
 
-	return *largestCluster;
+	// Extract largest cluster (assuming the object in the foreground)
+	std::shared_ptr<pcl::PointCloud<PointT>> largestCluster(new pcl::PointCloud<PointT>);
+	pcl::PointIndices largest = clusterIndices[0]; // The first cluster is usually the largest
+	for (int index : largest.indices) {
+		largestCluster->points.push_back(cloudFilteredTwice->points[index]);
+	}
+	largestCluster->width = largestCluster->points.size();
+	largestCluster->height = 1;
+	largestCluster->is_dense = true;
+
+	if (largestCluster.get()->empty()) {
+		std::cout << "Largest Cluster is empty KEKW" << std::endl;
+		return std::make_shared<pcl::PointCloud<PointT>>();
+	}
+
+	return largestCluster;
 }
 
-pcl::PointCloud<PointT> mapToPointCloud(float* depthMap, BYTE* colorMap, unsigned int width, unsigned int height, Eigen::Matrix3f colorIntrinsics, Eigen::Matrix4f colorExtrinsics, Eigen::Matrix3f depthIntrinsics, Eigen::Matrix4f depthExtrinsics) {
-	pcl::PointCloud<PointT> cloud;
+std::shared_ptr<pcl::PointCloud<PointT>> mapToPointCloud(float* depthMap, BYTE* colorMap, unsigned int width, unsigned int height, Eigen::Matrix3f colorIntrinsics, Eigen::Matrix4f colorExtrinsics, Eigen::Matrix3f depthIntrinsics, Eigen::Matrix4f depthExtrinsics) {
+	auto cloud = std::make_shared<pcl::PointCloud<PointT>>();
 	float fx = depthIntrinsics(0, 0);
 	float fy = depthIntrinsics(1, 1);
 	float cx = depthIntrinsics(0, 2);
@@ -152,22 +173,22 @@ pcl::PointCloud<PointT> mapToPointCloud(float* depthMap, BYTE* colorMap, unsigne
 				point.g = g;
 				point.b = b;
 
-				cloud.points.push_back(point);
+				cloud->points.push_back(point);
 			}
 		}
 	}
 
-	cloud.width = cloud.points.size();
-	cloud.height = 1;
-	cloud.is_dense = false;
+	cloud->width = cloud->points.size();
+	cloud->height = 1;
+	cloud->is_dense = false;
 
 	return cloud;
 }
 
-PointCloud convertToPointCloud(pcl::PointCloud<PointT>& pc) {
+PointCloud convertToPointCloud(pcl::PointCloud<PointT>* pc) {
 	SimpleMesh mesh;
 	// iterate over all points in the pc
-	for (const auto& point : pc.points) {
+	for (const auto& point : pc->points) {
 		// add the point to the cloud
 		mesh.addVertex(Vertex{ Vector4f(point.x, point.y, point.z, 1.0f), Vector4uc(point.r, point.g, point.b, 1.0f) });
 	}
@@ -199,11 +220,11 @@ int main() {
 	// We store a first frame as a reference frame. All next frames are tracked relatively to the first frame.
 	sensor.processNextFrame();
 	//float* depthMapObj = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
-	pcl::PointCloud<PointT> target = mapToPointCloud(sensor.getDepth(), sensor.getColorRGBX(), sensor.getColorImageWidth(), sensor.getColorImageHeight(), sensor.getColorIntrinsics(), sensor.getColorExtrinsics(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics());
-	pcl::PointCloud<PointT> targetWithoutBackground = removeBackground(target);
+	std::shared_ptr<pcl::PointCloud<PointT>> target = mapToPointCloud(sensor.getDepth(), sensor.getColorRGBX(), sensor.getColorImageWidth(), sensor.getColorImageHeight(), sensor.getColorIntrinsics(), sensor.getColorExtrinsics(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics());
+	std::shared_ptr<pcl::PointCloud<PointT>> targetWithoutBackground = removeBackground(target.get());
 	// Remove points of a certain color spectrum only found in the background
-	pcl::PointCloud<PointT> targetWithoutBackgroundColoredBits = removeColorRange(
-		targetWithoutBackground,
+	std::shared_ptr<pcl::PointCloud<PointT>> targetWithoutBackgroundColoredBits = removeColorRange(
+		targetWithoutBackground.get(),
 		r_min, r_max,
 		g_min, g_max,
 		b_min, b_max
@@ -255,15 +276,15 @@ int main() {
 		//float* depthMapObj2;
 		//depthMapObj2 = removeBackground(sensor.getDepth(), sensor.getColorRGBX(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight());
 		//PointCloud source{ depthMapObj2, sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
-		pcl::PointCloud<PointT> source = mapToPointCloud(sensor.getDepth(), sensor.getColorRGBX(), sensor.getColorImageWidth(), sensor.getColorImageHeight(), sensor.getColorIntrinsics(), sensor.getColorExtrinsics(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics());
-		pcl::PointCloud<PointT> sourceWithoutBackground = removeBackground(source);
-		pcl::PointCloud<PointT> targetWithoutBackgroundColoredBits = removeColorRange(
-			sourceWithoutBackground,
+		std::shared_ptr<pcl::PointCloud<PointT>> source = mapToPointCloud(sensor.getDepth(), sensor.getColorRGBX(), sensor.getColorImageWidth(), sensor.getColorImageHeight(), sensor.getColorIntrinsics(), sensor.getColorExtrinsics(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics());
+		std::shared_ptr<pcl::PointCloud<PointT>> sourceWithoutBackground = removeBackground(source.get());
+		std::shared_ptr<pcl::PointCloud<PointT>> targetWithoutBackgroundColoredBits = removeColorRange(
+			sourceWithoutBackground.get(),
 			r_min, r_max,
 			g_min, g_max,
 			b_min, b_max
 		);
-		currentCameraToWorld = optimizer.estimatePose(convertToPointCloud(sourceWithoutBackground), convertToPointCloud(targetWithoutBackground), currentCameraToWorld);
+		currentCameraToWorld = optimizer.estimatePose(convertToPointCloud(sourceWithoutBackground.get()), convertToPointCloud(targetWithoutBackground.get()), currentCameraToWorld);
 		
 		// Invert the transformation matrix to get the current camera pose.
 		Matrix4f currentCameraPose = currentCameraToWorld.inverse();
