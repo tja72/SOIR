@@ -74,7 +74,7 @@
     <LibraryPath>.\libs\FreeImage\x32;$(NETFXKitsDir)Lib\um\x86;$(WindowsSDK_LibraryPath_x86);$(VC_LibraryPath_x86);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);.\libs\Eigen;.\libs\FreeImage\x64;.\libs\ceres\ceres-solver\include;.\libs\ceres\glog\src\windows;.\libs\ceres\win\include;.\libs\Flann</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);.\libs\Eigen;.\libs\FreeImage\x64;.\libs\ceres\ceres-solver\include;.\libs\ceres\glog\src\windows;.\libs\ceres\win\include;.\libs\Flann;.\libs\pcl\include\pcl-1.14;.\libs\Boost\include\boost-1_84\</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;.\libs\FreeImage\x64;.\libs\ceres\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
