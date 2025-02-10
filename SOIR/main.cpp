@@ -53,6 +53,9 @@ std::shared_ptr<pcl::PointCloud<PointT>> removeColorRange(const pcl::PointCloud<
 	int r_min, int r_max,
 	int g_min, int g_max,
 	int b_min, int b_max) {
+
+	std::cout << "Removing color range ..." << std::endl;
+	clock_t begin = clock();
 	std::shared_ptr<pcl::PointCloud<PointT>> outputCloud(new pcl::PointCloud<PointT>);
 
 	for (const auto& point : inputCloud->points) {
@@ -73,22 +76,48 @@ std::shared_ptr<pcl::PointCloud<PointT>> removeColorRange(const pcl::PointCloud<
 	outputCloud->height = 1;
 	outputCloud->is_dense = true;
 
+	clock_t end = clock();
+	double elapsedSecs = double(end - begin) / CLOCKS_PER_SEC;
+	std::cout << "Completed in " << elapsedSecs << " seconds." << std::endl;
+	return outputCloud;
+}
+
+std::shared_ptr<pcl::PointCloud<PointT>> parallelPassThrough(const pcl::PointCloud<PointT>::Ptr& inputCloud, float minLimit, float maxLimit) {
+	auto outputCloud = std::make_shared<pcl::PointCloud<PointT>>();
+	outputCloud->points.reserve(inputCloud->points.size());
+
+#pragma omp parallel for
+	for (int i = 0; i < inputCloud->points.size(); ++i) {
+		const auto& point = inputCloud->points[i];
+		if (point.z >= minLimit && point.z <= maxLimit) {
+#pragma omp critical
+			outputCloud->points.push_back(point);
+		}
+	}
+
+	outputCloud->width = outputCloud->points.size();
+	outputCloud->height = 1;
+	outputCloud->is_dense = true;
+
 	return outputCloud;
 }
 
 std::shared_ptr<pcl::PointCloud<PointT>> removeBackground(const pcl::PointCloud<PointT>* inputCloud) {
-	pcl::PointCloud<PointT>::Ptr cloudFilteredOnce(new pcl::PointCloud<PointT>);
+
+	std::cout << "Removing background ..." << std::endl;
+	clock_t begin = clock();
+
+	//pcl::PointCloud<PointT>::Ptr cloudFilteredOnce(new pcl::PointCloud<PointT>);
 	pcl::PointCloud<PointT>::Ptr cloudFilteredTwice(new pcl::PointCloud<PointT>);
 	if (inputCloud == nullptr) {
 		std::cerr << "Error: inputCloud is null." << std::endl;
 		return std::make_shared<pcl::PointCloud<PointT>>();
 	}
 	// Filter points beyond a depth threshold
-	pcl::PassThrough<PointT> pass;
-	pass.setInputCloud(inputCloud->makeShared()); // Convert to shared pointer
-	pass.setFilterFieldName("z");
-	pass.setFilterLimits(0.0, 1.15); // Keep points below 1.15cm (distance between points and camera)
-	pass.filter(*cloudFilteredOnce);
+	
+	// Parallel PassThrough filter
+	auto cloudFilteredOnce = parallelPassThrough(inputCloud->makeShared(), 0.0, 1.15);
+
 
 	if (cloudFilteredOnce->empty()) {
 		std::cerr << "Error: cloudFilteredOnce is empty." << std::endl;
@@ -139,6 +168,9 @@ std::shared_ptr<pcl::PointCloud<PointT>> removeBackground(const pcl::PointCloud<
 		return std::make_shared<pcl::PointCloud<PointT>>();
 	}
 
+	clock_t end = clock();
+	double elapsedSecs = double(end - begin) / CLOCKS_PER_SEC;
+	std::cout << "Completed in " << elapsedSecs << " seconds." << std::endl;
 	return largestCluster;
 }
 
@@ -149,6 +181,8 @@ std::shared_ptr<pcl::PointCloud<PointT>> mapToPointCloud(float* depthMap, BYTE* 
 	float cx = depthIntrinsics(0, 2);
 	float cy = depthIntrinsics(1, 2);
 
+	std::cout << "Mapping to Point Cloud ..." << std::endl;
+	clock_t begin = clock();
 	for (unsigned int i = 0; i < height; ++i) {
 		for (unsigned int j = 0; j < width; ++j) {
 			unsigned int idx = i * width + j;
@@ -184,6 +218,9 @@ std::shared_ptr<pcl::PointCloud<PointT>> mapToPointCloud(float* depthMap, BYTE* 
 	cloud->height = 1;
 	cloud->is_dense = false;
 
+	clock_t end = clock();
+	double elapsedSecs = double(end - begin) / CLOCKS_PER_SEC;
+	std::cout << "Completed in " << elapsedSecs << " seconds." << std::endl;
 	return cloud;
 }
 
@@ -254,7 +291,8 @@ int main() {
 	std::vector<Matrix4f> estimatedPoses;
 	Matrix4f currentCameraToWorld = Matrix4f::Identity();
 	estimatedPoses.push_back(currentCameraToWorld.inverse());
-	SimpleMesh finalMesh = SimpleMesh{ sensor, currentCameraToWorld, 0.1f};
+	//SimpleMesh finalMesh = SimpleMesh{ sensor, currentCameraToWorld, 0.1f};
+	SimpleMesh finalMesh = SimpleMesh{ targetWithoutBackgroundColoredBits.get(), currentCameraToWorld, 0.1f};
 
 	int i = 0;
 	while (sensor.processNextFrame()) {
@@ -280,7 +318,7 @@ int main() {
 		//PointCloud source{ depthMapObj2, sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
 		std::shared_ptr<pcl::PointCloud<PointT>> source = mapToPointCloud(sensor.getDepth(), sensor.getColorRGBX(), sensor.getColorImageWidth(), sensor.getColorImageHeight(), sensor.getColorIntrinsics(), sensor.getColorExtrinsics(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics());
 		std::shared_ptr<pcl::PointCloud<PointT>> sourceWithoutBackground = removeBackground(source.get());
-		std::shared_ptr<pcl::PointCloud<PointT>> targetWithoutBackgroundColoredBits = removeColorRange(
+		std::shared_ptr<pcl::PointCloud<PointT>> sourceWithoutBackgroundColoredBits = removeColorRange(
 			sourceWithoutBackground.get(),
 			r_min, r_max,
 			g_min, g_max,
@@ -295,7 +333,8 @@ int main() {
 
 		
 		// We write out the mesh to file for debugging.
-		SimpleMesh currentDepthMesh{ sensor, currentCameraPose, 0.0015f};
+		//SimpleMesh currentDepthMesh{ sensor, currentCameraPose, 0.0015f};
+		SimpleMesh currentDepthMesh{ sourceWithoutBackgroundColoredBits.get(), currentCameraToWorld, 0.1f };
 		SimpleMesh currentCameraMesh = SimpleMesh::camera(currentCameraPose, 0.001f);
 		SimpleMesh resultingMesh = SimpleMesh::joinMeshes(currentDepthMesh, currentCameraMesh, Matrix4f::Identity());
 		finalMesh = SimpleMesh::joinMeshes(finalMesh, currentDepthMesh, currentCameraToWorld);
@@ -305,7 +344,12 @@ int main() {
 			std::cout << "Failed to write mesh!\nCheck file path!" << std::endl;
 			return -1;
 		}
-
+		std::stringstream ss2;
+		ss2 << OUTPUT_FILE_NAME << sensor.getCurrentFrameCnt() << "_final.off";
+		if (!finalMesh.writeMesh(ss2.str())) {
+			std::cout << "Failed to write mesh!\nCheck file path!" << std::endl;
+			return -1;
+		}
 		
 		i++;
 	}

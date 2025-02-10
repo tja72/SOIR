@@ -4,9 +4,17 @@
 #include <fstream>
 
 #include "Eigen.h"
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/segmentation/extract_clusters.h>
 
 #define COLOR_THRESHOLD 50
 #define DEPTH_THRESHOLD .2//.3f
+
+
+using PointT = pcl::PointXYZRGB; // Assuming your point cloud has color info
 
 struct Vertex {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -65,6 +73,54 @@ public:
 	/**
 	 * Constructs a mesh from the current color and depth image.
 	 */
+	SimpleMesh(pcl::PointCloud<PointT> *pc, const Matrix4f& cameraPose, float edgeThreshold = 0.015f) {
+
+		m_vertices.resize(pc->size());
+		Matrix4f cameraPoseInverse = cameraPose.inverse();
+		// create vertecies for all points in the point cloud
+		int idx = 0;
+		for (const auto& point : pc->points) {
+			// add the point to the cloud
+			m_vertices[idx].position = cameraPoseInverse * Vector4f(point.x, point.y, point.z, 1.0f);
+			m_vertices[idx].color = Vector4uc(point.r, point.g, point.b, 255);
+			idx++;
+		}
+
+		auto height = pc->height;
+		auto width = pc->width;
+
+		// Compute triangles (faces).
+		m_triangles.reserve((height - 1) * (width - 1) * 2);
+		for (unsigned int i = 0; i < height - 1; i++) {
+			for (unsigned int j = 0; j < width - 1; j++) {
+				unsigned int i0 = i * width + j;
+				unsigned int i1 = (i + 1) * width + j;
+				unsigned int i2 = i * width + j + 1;
+				unsigned int i3 = (i + 1) * width + j + 1;
+
+				bool valid0 = m_vertices[i0].position.allFinite();
+				bool valid1 = m_vertices[i1].position.allFinite();
+				bool valid2 = m_vertices[i2].position.allFinite();
+				bool valid3 = m_vertices[i3].position.allFinite();
+
+				if (valid0 && valid1 && valid2) {
+					float d0 = (m_vertices[i0].position - m_vertices[i1].position).norm();
+					float d1 = (m_vertices[i0].position - m_vertices[i2].position).norm();
+					float d2 = (m_vertices[i1].position - m_vertices[i2].position).norm();
+					if (edgeThreshold > d0 && edgeThreshold > d1 && edgeThreshold > d2)
+						addFace(i0, i1, i2);
+				}
+				if (valid1 && valid2 && valid3) {
+					float d0 = (m_vertices[i3].position - m_vertices[i1].position).norm();
+					float d1 = (m_vertices[i3].position - m_vertices[i2].position).norm();
+					float d2 = (m_vertices[i1].position - m_vertices[i2].position).norm();
+					if (edgeThreshold > d0 && edgeThreshold > d1 && edgeThreshold > d2)
+						addFace(i1, i3, i2);
+				}
+			}
+		}
+	}
+
 	SimpleMesh(VirtualSensorOpenNI& sensor, const Matrix4f& cameraPose, float edgeThreshold = 0.015f) {
 		// Get ptr to the current depth frame.
 		// Depth is stored in row major (get dimensions via sensor.GetDepthImageWidth() / GetDepthImageHeight()).
@@ -92,7 +148,7 @@ public:
 		for (unsigned int v = 0; v < sensor.getDepthImageHeight(); ++v) {
 			// For every pixel in a row.
 			for (unsigned int u = 0; u < sensor.getDepthImageWidth(); ++u) {
-				unsigned int idx = v*sensor.getDepthImageWidth() + u; // linearized index
+				unsigned int idx = v * sensor.getDepthImageWidth() + u; // linearized index
 				float depth = depthMap[idx];
 				if (depth == MINF) {
 					m_vertices[idx].position = Vector4f(MINF, MINF, MINF, MINF);
@@ -109,10 +165,10 @@ public:
 					unsigned int vCol = (unsigned int)std::floor(proj.y());
 					if (uCol >= sensor.getColorImageWidth()) uCol = sensor.getColorImageWidth() - 1;
 					if (vCol >= sensor.getColorImageHeight()) vCol = sensor.getColorImageHeight() - 1;
-					unsigned int idxCol = vCol*sensor.getColorImageWidth() + uCol; // linearized index color
-																					//unsigned int idxCol = idx; // linearized index color
+					unsigned int idxCol = vCol * sensor.getColorImageWidth() + uCol; // linearized index color
+					//unsigned int idxCol = idx; // linearized index color
 
-					// Write color to vertex.
+// Write color to vertex.
 					m_vertices[idx].color = Vector4uc(colorMap[3 * idxCol + 0], colorMap[3 * idxCol + 1], colorMap[3 * idxCol + 2], 255);
 				}
 			}
@@ -122,10 +178,10 @@ public:
 		m_triangles.reserve((sensor.getDepthImageHeight() - 1) * (sensor.getDepthImageWidth() - 1) * 2);
 		for (unsigned int i = 0; i < sensor.getDepthImageHeight() - 1; i++) {
 			for (unsigned int j = 0; j < sensor.getDepthImageWidth() - 1; j++) {
-				unsigned int i0 = i*sensor.getDepthImageWidth() + j;
-				unsigned int i1 = (i + 1)*sensor.getDepthImageWidth() + j;
-				unsigned int i2 = i*sensor.getDepthImageWidth() + j + 1;
-				unsigned int i3 = (i + 1)*sensor.getDepthImageWidth() + j + 1;
+				unsigned int i0 = i * sensor.getDepthImageWidth() + j;
+				unsigned int i1 = (i + 1) * sensor.getDepthImageWidth() + j;
+				unsigned int i2 = i * sensor.getDepthImageWidth() + j + 1;
+				unsigned int i3 = (i + 1) * sensor.getDepthImageWidth() + j + 1;
 
 				bool valid0 = m_vertices[i0].position.allFinite();
 				bool valid1 = m_vertices[i1].position.allFinite();
