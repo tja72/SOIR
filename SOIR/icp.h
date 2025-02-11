@@ -50,7 +50,7 @@ int constructObject(VirtualSensorOpenNI sensor) {
 
 		// Estimate the current camera pose from source to target mesh with ICP optimization.
 		// We downsample the source image to speed up the correspondence matching.
-		point_cloud::PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 8 };
+		point_cloud::PointCloud source{ sensor.getDepth(), sensor.getDepthIntrinsics(), sensor.getDepthExtrinsics(), sensor.getDepthImageWidth(), sensor.getDepthImageHeight(), 2 };
 		currentCameraToWorld = optimizer.estimatePose(source, target, currentCameraToWorld);
 
 

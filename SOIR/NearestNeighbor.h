@@ -136,7 +136,7 @@ public:
 		
 		// Do a knn search, searching for 1 nearest point and using 16 checks.
 		flann::SearchParams searchParams{ 16 };
-		searchParams.cores = 0;
+		searchParams.cores = 8;
 		m_index->knnSearch(query, indices, distances, 1, searchParams);
 
 		// Filter the matches.

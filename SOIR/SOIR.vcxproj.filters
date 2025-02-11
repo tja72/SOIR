@@ -83,5 +83,8 @@
     <ClInclude Include="icp.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="reduce.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
