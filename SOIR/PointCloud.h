@@ -6,6 +6,12 @@ class PointCloud {
 public:
 	PointCloud() {}
 
+	PointCloud(std::vector<Vector3f> points, std::vector<Vector3f> normals) {
+		
+		m_points = points;
+		m_normals = normals;
+	}
+
 	PointCloud(const SimpleMesh& mesh) {
 		const auto& vertices = mesh.getVertices();
 		const auto& triangles = mesh.getTriangles();
@@ -67,6 +73,8 @@ public:
 			}
 		}
 
+		
+
 		// We need to compute derivatives and then the normalized normal vector (for valid pixels).
 		std::vector<Vector3f> normalsTmp(width * height);
 
@@ -75,7 +83,7 @@ public:
 			for (int u = 1; u < width - 1; ++u) {
 				unsigned int idx = v*width + u; // linearized index
 
-				// TODO: Compute the normals using central differences. 
+				// Compute the normals using central differences. 
 				Vector3f a = pointsTmp[idx + 1] - pointsTmp[idx - 1];
 				Vector3f b = pointsTmp[idx + width] - pointsTmp[idx - width];
 				normalsTmp[idx] = a.cross(b); // Needs to be replaced.
@@ -107,6 +115,16 @@ public:
 				m_normals.push_back(normal);
 			}
 		}
+	}
+
+	PointCloud joinClouds(PointCloud source) {
+		std::vector<Vector3f> newPoints;
+		std::vector<Vector3f> newNormals;
+		newPoints.insert(newPoints.end(), m_points.begin(), m_points.end());
+		newNormals.insert(newNormals.end(), m_normals.begin(), m_normals.end());
+		newPoints.insert(newPoints.end(), source.getNormals().begin(), source.getNormals().end());
+		newNormals.insert(newNormals.end(), source.getPoints().begin(), source.getPoints().end());
+		return PointCloud(newPoints, newNormals);
 	}
 
 	bool readFromFile(const std::string& filename) {

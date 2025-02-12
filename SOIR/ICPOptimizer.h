@@ -248,6 +248,10 @@ public:
 			ceres::Solve(options, &problem, &summary);
 			std::cout << summary.BriefReport() << std::endl;
 			//std::cout << summary.FullReport() << std::endl;
+			if (summary.termination_type == ceres::CONVERGENCE){
+				break;
+			}
+
 
 			// Update the current pose estimate (we always update the pose from the left, using left-increment notation).
 			Matrix4f matrix = PoseIncrement<double>::convertToMatrix(poseIncrement);

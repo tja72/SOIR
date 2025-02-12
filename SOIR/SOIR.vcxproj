@@ -76,6 +76,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);.\libs\Eigen;.\libs\FreeImage\x64;.\libs\ceres\ceres-solver\include;.\libs\ceres\glog\src\windows;.\libs\ceres\win\include;.\libs\Flann</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;.\libs\FreeImage\x64;.\libs\ceres\x64</LibraryPath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\really_vartargetsource_nobackground</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

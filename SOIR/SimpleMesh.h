@@ -5,7 +5,7 @@
 
 #include "Eigen.h"
 
-#define COLOR_THRESHOLD 50
+#define COLOR_THRESHOLD 185
 #define DEPTH_THRESHOLD .2//.3f
 
 struct Vertex {
@@ -28,7 +28,7 @@ struct Triangle {
 		idx0(_idx0), idx1(_idx1), idx2(_idx2) {}
 };
 
-float* removeBackground(float* depthMap, BYTE* colorMap, unsigned int width, unsigned int height) {
+float* removeBackground(float* depthMap, BYTE* colorMap, unsigned int width, unsigned int height, bool removeColor = true) {
 
 
 	float* newDepthMap = new float[width * height];
@@ -41,13 +41,22 @@ float* removeBackground(float* depthMap, BYTE* colorMap, unsigned int width, uns
 			BYTE g = colorMap[3 * idx + 1];
 			BYTE b = colorMap[3 * idx + 2];
 			float depth = depthMap[idx];
+			if (removeColor) {
+				if (r < COLOR_THRESHOLD && g < COLOR_THRESHOLD && b < COLOR_THRESHOLD && depth < DEPTH_THRESHOLD) {
+					newDepthMap[idx] = depthMap[idx];
 
-			if (r < COLOR_THRESHOLD && g < COLOR_THRESHOLD && b < COLOR_THRESHOLD && depth < DEPTH_THRESHOLD) {
-				newDepthMap[idx] = depthMap[idx];
+				} else {
+					newDepthMap[idx] = -std::numeric_limits<float>::infinity();
 
+				}
 			}
 			else {
-				newDepthMap[idx] = -std::numeric_limits<float>::infinity();
+				if (depth < DEPTH_THRESHOLD) {
+					newDepthMap[idx] = depthMap[idx];
+				}
+				else {
+					newDepthMap[idx] = -std::numeric_limits<float>::infinity();
+				}
 
 			}
 

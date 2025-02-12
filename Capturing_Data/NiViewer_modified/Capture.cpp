@@ -41,7 +41,7 @@ using namespace xn;
 // --------------------------------
 // Defines
 // --------------------------------
-#define CAPTURED_FRAMES_DIR_NAME "../../data/Dataset_5.0"
+#define CAPTURED_FRAMES_DIR_NAME "../../data/Dataset_9.0"
 
 // --------------------------------
 // Types
@@ -112,7 +112,7 @@ static const XnCodecID CODEC_DONT_CAPTURE = XN_CODEC_NULL;
 bool isCapturingTxt = false;
 bool closeRecording = false;
 int hasNewFrame = 0;
-int captureFrameRate = 5;
+int captureFrameRate = 60;
 bool closeCapturingTxt = false;
 
 std::vector<std::tuple<std::string, std::string>> listOfDepthNamesTxt;

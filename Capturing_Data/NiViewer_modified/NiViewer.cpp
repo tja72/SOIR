@@ -682,6 +682,7 @@ int main(int argc, char** argv)
 	glut_add_interactor(&light);
 	glut_add_interactor(&object);
 
+
 	camera.translator.t = vec3f(0, 0, 0);
 	camera.trackball.r = rotationf(vec3f(0, 0, 0), to_radians(0));
 

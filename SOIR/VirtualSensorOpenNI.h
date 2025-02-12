@@ -47,18 +47,18 @@ public:
 
 		if (m_filenameDepthImages.size() != m_filenameColorImages.size()) return false;
 
-		// Image resolutions TODO -----------------------------------------------------------------------------------------------------------------
+		// Image resolutions 
 		m_colorImageWidth = 320;
 		m_colorImageHeight = 240;
 		m_depthImageWidth = 320;
 		m_depthImageHeight = 240;
 
-		// Intrinsics TODO
-		m_colorIntrinsics << 537.002f, 0.0f, 319.259f,
-			0.0f, 536.66f, 233.608f,
+		// Intrinsics
+		m_colorIntrinsics << 537.002f/2.f, 0.0f, 319.259f/2.f,
+			0.0f, 536.66f/2.f, 233.608f/2.f,
 			0.0f, 0.0f, 1.0f;
 
-		m_depthIntrinsics = m_colorIntrinsics; //TODO
+		m_depthIntrinsics = m_colorIntrinsics; 
 		
 
 		m_colorExtrinsics.setIdentity();
@@ -102,7 +102,7 @@ public:
 		}
 
 		// read data
-		inputFile.read(reinterpret_cast<char*>(m_colorFrame), m_colorImageHeight * m_colorImageWidth * sizeof(BYTE) * 3); // TODO * 4? -------------------
+		inputFile.read(reinterpret_cast<char*>(m_colorFrame), m_colorImageHeight * m_colorImageWidth * sizeof(BYTE) * 3); 
 
 		if (inputFile.fail()) {
 			std::cerr << "Failed to read image data from file." << std::endl;
@@ -154,7 +154,7 @@ public:
 			if (depthData[i] == 0)
 				m_depthFrame[i] = MINF;
 			else
-				m_depthFrame[i] = depthData[i] * 1.0f / 5000.0f; // TODO correct? / 5000.0f; -----------------------------------------
+				m_depthFrame[i] = depthData[i] * 1.0f / 10000.0f; 
 		}
 
 		// clean up
@@ -181,31 +181,7 @@ public:
 		if (!LoadDepthFromRAWFile(m_baseDir + m_filenameDepthImages[m_currentIdx]))
 			return false;
 
-		// depth images are scaled by 5000 (see https://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats)
-		/**FreeImageU16F dImage;
-		dImage.LoadImageFromFile(m_baseDir + m_filenameDepthImages[m_currentIdx]);
-
-		for (unsigned int i = 0; i < m_depthImageWidth * m_depthImageHeight; ++i) {
-			if (dImage.data[i] == 0)
-				m_depthFrame[i] = MINF;
-			else
-				m_depthFrame[i] = dImage.data[i] * 1.0f; // TODO correct? / 5000.0f; -----------------------------------------
-		}**/
-
-
-		/** only if you have a trajectory file
-		// find transformation (simple nearest neighbor, linear search)
-		double timestamp = m_depthImagesTimeStamps[m_currentIdx];
-		double min = std::numeric_limits<double>::max();
-		int idx = 0;
-		for (unsigned int i = 0; i < m_trajectory.size(); ++i) {
-			double d = abs(m_trajectoryTimeStamps[i] - timestamp);
-			if (min > d) {
-				min = d;
-				idx = i;
-			}
-		}
-		m_currentTrajectory = m_trajectory[idx];**/
+		
 
 		return true;
 	}
