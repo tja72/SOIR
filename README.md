@@ -14,3 +14,11 @@ Open todos are:
 - adding feature matching to stabilize ICP
 - improving the background extraction
 - Optimizing the process and parameters in respect to runtime (make online possible)
+
+
+Here is an example of our code processing the first 211 frames. We observed significantly higher computation times but also better results when using lower thresholds for color and depth. SO we assume a better background removal function will increase the time efficiency and the quality of icp:
+
+![frames 1-211 with more points](https://github.com/tja72/SOIR/blob/dev/results/final_merged_frame1-211_original.png)
+
+When using less points and higher thresholds ICP started to mismatch at frame 271:
+![frames 1-271 with less points](https://github.com/tja72/SOIR/blob/dev/results/final_merged_frame1-270.jpg)
